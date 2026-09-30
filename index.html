@@ -536,7 +536,7 @@ const nm=i=>i===mySeat?'你':NAMES[i];
 const isAI=i=>SEATK[i]==='ai';
 
 /* ═══ 可调规则 ═══ */
-const VERSION='1.62';   // 改了东西就往上加，手机上看标题旁边那个号，能确认刷到新版没有
+const VERSION='1.63';   // 改了东西就往上加，手机上看标题旁边那个号，能确认刷到新版没有
 const SET={deck:2,wild:1,max:2,burn:1,ai:1,sound:1,salty:1,pace:3};
 const PACEF=()=>[1,.85,1.15,1.5][SET.pace]||1.5;   // 节奏：爽快/适中/悠着点，乘在 AI 思考和桌面停顿上
 try{ const _s=JSON.parse(localStorage.getItem('sxh_set')||'null');
@@ -715,7 +715,7 @@ function deal(){
   ECFG={wild:two?0:SET.wild,max:SET.max,burn:SET.burn,deck:two?2:1,per:per,hard:1};   // AI 一律狠模式
   turn=Math.random()*4|0;          // 谁先出，抽签
   tilt={}; bubClear(); rage=[0,0,0,0]; coolCall=[0,0,0,0]; REC=[0,1,2,3].map(()=>({lies:0,truths:0})); banterEpoch++; rollPileJit(); rollBack();
-  known=[{},{},{},{}]; roundLeaderId=null; mood=['','idle','idle','idle'];
+  known=[{},{},{},{}]; memReset(); roundLeaderId=null; mood=['','idle','idle','idle'];
   Sfx.deal();
 }
 function say(t){logs.unshift(t);logs=logs.slice(0,3);}
@@ -1194,6 +1194,15 @@ function bubClear(){
   for(const k in BUBQ){ clearTimeout(BUBQ[k]); } BUBQ={};
 }
 let known=[{},{},{},{}], roundLeaderId=null, humCaughtS=0, humHonestS=0;
+// 自己打进牌堆的牌自己记得：堆归了谁，那几张就在谁手里。这是每个人都有的基本记忆，不算"记牌"人设
+let piled=[[],[],[],[]];                                   // 当前这一堆里，每人放进去了哪些牌
+let mem=[0,1,2,3].map(()=>[{},{},{},{}]);                 // mem[我][他][点数] = 我私下知道他手里至少有几张
+const memReset=()=>{ piled=[[],[],[],[]]; mem=[0,1,2,3].map(()=>[{},{},{},{}]); };
+function pileGoesTo(who){                                  // 牌堆归了 who：各人把自己放进去的牌记到 who 名下
+  for(let s=0;s<4;s++){ if(s===who) continue;
+    piled[s].forEach(c=>{ if(c<0) return; const key=isJoker(c)?'j':rk(c); mem[s][who][key]=(mem[s][who][key]||0)+1; }); }
+  piled=[[],[],[],[]];
+}
 let mood=['','idle','idle','idle'];
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const rnd=(a,b)=>a+Math.random()*(b-a);
@@ -1381,11 +1390,10 @@ function aiChallenge(p,P,hot){
   const hardCap=capT(), R=lastPlay.rank, k=lastPlay.cards.length, q=lastPlay.player;
   const mine=hands[p].filter(c=>fits(c,R)).length;
   if(k+mine>hardCap) return true;               // 铁证：连随机加的牌都算上也放不下
-  let knownElse=0, knownAll=0;                  // 翻开过的牌都到了谁手里（记牌的人才算）
-  if(P.counts){
-    for(let i=0;i<4;i++){ const kr=(known[i][R]||0)+(ECFG.wild?(known[i].j||0):0); knownAll+=kr; if(i!==p&&i!==q) knownElse+=kr; }
-    if(k+mine+knownElse>hardCap) return true;
-  }
+  let knownElse=0, knownAll=0;                  // 翻开过的牌（记牌人设才算）+ 我自己放进堆里归了谁的（人人都记）
+  const seen=i=>(P.counts?((known[i][R]||0)+(ECFG.wild?(known[i].j||0):0)):0)+((mem[p][i][R]||0)+(ECFG.wild?(mem[p][i].j||0):0));
+  for(let i=0;i<4;i++){ const kr=seen(i); knownAll+=kr; if(i!==p&&i!==q) knownElse+=kr; }
+  if(k+mine+knownElse>hardCap) return true;
   const left=hands[q].length;
 
   /* ── 这一手是吹的概率 pLie：几千手模拟对局拟合出来的逻辑回归（docs/strategy.md 有数据）。
@@ -1393,7 +1401,7 @@ function aiChallenge(p,P,hot){
      本轮已经报过一次还接着报的九成在吹，我自己攥得越多他越假，报两张（成对）多半是真的。
      再叠上他这局和跨局的吹牛前科。 */
   const before=Math.max(0,roundClaimed-k);
-  const knownQ=P.counts?(known[q][R]||0):0;
+  const knownQ=seen(q);
   const rc=REC[q]||{lies:0,truths:0};
   let bq=(rc.lies*.7+.55)/(rc.lies*.7+rc.truths+2);        // 他这局翻开过的记录（白纸≈0.27）
   if(q===mySeat&&SEATK[q]==='human'){                       // 本机真人还看跨局旧账
@@ -1416,7 +1424,7 @@ function aiChallenge(p,P,hot){
   if(left===0){
     // 他这一手出完就赢：真的我抓不抓都输，吹的只有抓才有救 —— 宁可错抓
     let prob=Math.max(P.guard*(q===roundLeaderId?.7:1), pLie);
-    if(P.counts&&(known[q][R]||0)>=k) prob*=.4;
+    if(knownQ>=k) prob*=.4;
     if(hot) prob=Math.min(.99,prob+.05);
     if(coolCall[p]) prob*=.6;
     return Math.random()<Math.min(.99,prob);
@@ -1441,6 +1449,9 @@ function presentPlayed(ev){
   const p=ev.seat;
   if(tilt[p]) tilt[p]--;                       // 出完这手，火气消一格
   for(const r in known[p]) known[p][r]=Math.max(0,known[p][r]-ev.n);  // 他出了牌，明牌可能被打掉
+  const cs=(lastPlay&&lastPlay.player===p&&lastPlay.cards&&lastPlay.cards.length===ev.n)?lastPlay.cards:null;   // 主机有牌面；客机只有张数
+  piled[p].push(...(cs||Array(ev.n).fill(-1)));
+  for(let s=0;s<4;s++) for(const r in mem[s][p]) mem[s][p][r]=Math.max(0,mem[s][p][r]-ev.n);
   say(nm(p)+' 报 '+ev.n+' 个 '+RANKS[ev.rank]+(ev.out?' —— 手牌出完了！':''));
   if(ev.n>=3&&!ev.out&&Math.random()<.15){
     const dl=[0,1,2,3].filter(i=>isAI(i)&&i!==p);
@@ -1478,6 +1489,7 @@ async function presentReveal(ev){
   if(AVA[next]&&AVA[next].f)  mood[next]='glee';
   ev.gained.forEach(c=>fresh.add(c));
   cards.forEach(c=>{ const key=isJoker(c)?'j':rk(c); known[loser][key]=(known[loser][key]||0)+1; }); // 桌面见过的牌，全桌都记得到了谁手里
+  pileGoesTo(loser);                                    // 各人自己放进去的牌，也跟着记到他名下
   Sfx.pickup(pn);
   if(REC[p]) { if(truth) REC[p].truths++; else REC[p].lies++; }   // 记前科
   rage[loser]=(rage[loser]||0)+1;                       // 背一次牌堆，火气 +1
@@ -1504,6 +1516,7 @@ async function presentReveal(ev){
 }
 async function presentBurn(ev){
   Sfx.burn();
+  if(ev.eaten) pileGoesTo(ev.leader); else piled=[[],[],[],[]];
   if(!ev.eaten){
     say('三家都过 — 桌上 '+ev.n+' 张作废，'+nm(ev.leader)+' 开新一轮');
     stage('<div class="who">三家都过</div><div class="plaque">'+ev.n+' 张作废</div>'+
@@ -1875,7 +1888,7 @@ async function clientStart(m){
   pile=Array(m.env.pileN).fill(-1);
   clientEnv(m.env);
   winner=null;logs=[];selected=new Set();fresh=new Set();outQueue=[];
-  tilt={};bubClear();rage=[0,0,0,0];coolCall=[0,0,0,0];mood=['idle','idle','idle','idle'];known=[{},{},{},{}];banterEpoch++;rollPileJit();
+  tilt={};bubClear();rage=[0,0,0,0];coolCall=[0,0,0,0];mood=['idle','idle','idle','idle'];known=[{},{},{},{}];memReset();banterEpoch++;rollPileJit();
   $('netSheet').classList.remove('on');
   $('overSheet').classList.remove('on');
   $('emoteBtn').style.display='inline';
