@@ -265,7 +265,10 @@ h1{
 #hand .card{position:absolute;top:12px;cursor:pointer;
   transition:top .16s cubic-bezier(.2,1.4,.4,1),box-shadow .16s}
 #hand .card.sel{top:0;box-shadow:0 8px 14px rgba(0,0,0,.45),0 0 0 2px var(--brass)}
-#hand .card.fresh{animation:slidein .3s ease-out backwards}
+#hand .card.fresh.in{animation:slidein .3s ease-out backwards}
+#hand .card.fresh{box-shadow:0 0 0 2px var(--brass),0 0 10px rgba(199,154,78,.55),0 6px 14px rgba(0,0,0,.45)}
+#hand .card.fresh::before{content:"新";position:absolute;left:3px;bottom:3px;z-index:2;
+  background:var(--brass);color:#20160A;font-size:9px;line-height:1;padding:2px 4px;border-radius:5px;font-weight:600}
 @keyframes slidein{from{transform:translateY(26px);opacity:0}}
 
 /* ─── 按钮 ─── */
@@ -536,7 +539,7 @@ const nm=i=>i===mySeat?'你':NAMES[i];
 const isAI=i=>SEATK[i]==='ai';
 
 /* ═══ 可调规则 ═══ */
-const VERSION='1.63';   // 改了东西就往上加，手机上看标题旁边那个号，能确认刷到新版没有
+const VERSION='1.65';   // 改了东西就往上加，手机上看标题旁边那个号，能确认刷到新版没有
 const SET={deck:2,wild:1,max:2,burn:1,ai:1,sound:1,salty:1,pace:3};
 const PACEF=()=>[1,.85,1.15,1.5][SET.pace]||1.5;   // 节奏：爽快/适中/悠着点，乘在 AI 思考和桌面停顿上
 try{ const _s=JSON.parse(localStorage.getItem('sxh_set')||'null');
@@ -689,6 +692,7 @@ function loadGame(j){
 
 /* ═══ 状态 ═══ */
 let roundBy=[0,0,0,0];   // 这一轮每人已经报过几张
+let justGot=false;   // 刚收进来的牌：第一次重画播滑入动画，之后金圈常驻到你出下一手
 let hands,pile,turn,currentRank,lastPlay,roundClaimed,passStreak,over,winner,logs,selected,fresh,outQueue,
     humanResolve;
 const $=id=>document.getElementById(id);
@@ -753,11 +757,11 @@ function render(){
   const step = n<=1?0 : Math.min(34, Math.max(15, (Math.min(420,innerWidth-40)-46)/(n-1)));
   $('hand').style.width=(46+step*(n-1))+'px';
   $('hand').innerHTML=h.map((c,i)=>
-    '<div class="'+cls(c)+(selected.has(c)?' sel':'')+(fresh.has(c)?' fresh':'')+
+    '<div class="'+cls(c)+(selected.has(c)?' sel':'')+(fresh.has(c)?' fresh'+(justGot?' in':''):'')+
     '" data-c="'+c+'" tabindex="0" style="left:'+(i*step)+'px;z-index:'+i+'">'+cardInner(c)+'</div>').join('');
   $('handct').textContent=n+' 张';
   $('log').innerHTML=logs.map(t=>'<div>'+t+'</div>').join('');
-  fresh.clear();
+  justGot=false;                    // 动画只播一次；金圈留着，等你出了下一手再清
   for(const k in BUBS) BUBS[k].pop=false;   // 弹出动画只播一次
   staggerBubs();
 }
@@ -783,6 +787,10 @@ function staggerBubs(){
 
 function stage(html,stampText){
   $('stage').innerHTML=html+(stampText?'<div class="stamp">'+stampText+'</div>':'');
+}
+function stampOn(text){                 // 往现有画面上盖章，不重画——翻开的牌别再翻第二次
+  const st=$('stage'); const old=st.querySelector('.stamp'); if(old) old.remove();
+  const d=document.createElement('div'); d.className='stamp'; d.textContent=text; st.appendChild(d);
 }
 // drop=刚打出去几张。只有这几张播"落下"的动画，
 // 否则每次重画牌桌整堆牌都会重新落一遍，看着像在重新发牌。
@@ -878,11 +886,13 @@ $('rankSheet').addEventListener('click',e=>{
   if(e.target===$('rankSheet')) $('rankSheet').classList.remove('on'); // 点弹窗外面也算取消
 });
 function commitAct(a){
+  fresh=new Set();
   selected.clear();
   const r=humanResolve; humanResolve=null; render(); updateControls();
   r({t:a,seat:mySeat});
 }
 function commitPlay(rank){
+  fresh=new Set();
   const cards=[...selected]; selected.clear();
   const r=humanResolve; humanResolve=null; updateControls();
   r({t:'play',seat:mySeat,cards:cards,rank:rank});
@@ -1480,14 +1490,13 @@ async function presentReveal(ev){
     aiBanter(p, '你报 '+cards.length+' 个 '+RANKS[ev.rank]+'，被 '+
       (isAI(q)?NAMES[q]:'真人玩家'+(q===mySeat?'':NAMES[q]))+' 喊说瞎话翻开了 —— '+
       (truth?'你说的是真话，他冤枉你，这堆牌归他背':'你真在吹，让他逮个正着，你把整桌牌收走')); }
-  stage('<div class="who">'+nm(q)+' 喊：说瞎话！</div>'+
-        '<div class="reveal">'+cards.map(faceUp).join('')+'</div>', truth?'真话':'瞎话');
+  stampOn(truth?'真话':'瞎话');       // 只盖章，牌不重翻
   await sleep(1300*PACEF());
 
   const loser=ev.loser, next=ev.next, pn=ev.picked;
   if(AVA[loser]&&AVA[loser].f) mood[loser]='oops';
   if(AVA[next]&&AVA[next].f)  mood[next]='glee';
-  ev.gained.forEach(c=>fresh.add(c));
+  if(loser===mySeat&&ev.gained.length){ fresh=new Set(ev.gained); justGot=true; }
   cards.forEach(c=>{ const key=isJoker(c)?'j':rk(c); known[loser][key]=(known[loser][key]||0)+1; }); // 桌面见过的牌，全桌都记得到了谁手里
   pileGoesTo(loser);                                    // 各人自己放进去的牌，也跟着记到他名下
   Sfx.pickup(pn);
@@ -1522,7 +1531,7 @@ async function presentBurn(ev){
     stage('<div class="who">三家都过</div><div class="plaque">'+ev.n+' 张作废</div>'+
           '<div class="note">由 '+nm(ev.leader)+' 开新一轮</div>');
   }else{
-    ev.gained.forEach(c=>fresh.add(c));
+    if(ev.leader===mySeat&&ev.gained.length){ fresh=new Set(ev.gained); justGot=true; }
     say('三家都过 — '+nm(ev.leader)+' 收走 '+ev.n+' 张，开新一轮');
     stage('<div class="who">三家都过</div><div class="plaque">'+nm(ev.leader)+' 收走 '+ev.n+' 张</div>');
   }
@@ -1902,8 +1911,7 @@ async function clientStart(m){
   $('hand').innerHTML=''; $('handct').textContent='';
   Sfx.deal();
   await dealAnim();
-  hands[mySeat].forEach(c=>fresh.add(c));
-  render();
+  fresh=new Set(hands[mySeat]); justGot=true; render(); fresh=new Set();
   say('发牌完毕');
   clientAfter();
 }
@@ -2118,8 +2126,7 @@ async function newGame(){
   $('hand').innerHTML=''; $('handct').textContent='';   // 牌先扣着，飞完再亮
   stage('');
   await dealAnim();
-  hands[mySeat].forEach(c=>fresh.add(c));               // 亮手牌时从下面滑进来
-  render();
+  fresh=new Set(hands[mySeat]); justGot=true; render(); fresh=new Set();   // 亮手牌时从下面滑进来，滑完不留圈
   dealing=false;
   say('发牌完毕，'+nm(turn)+'先出');
   loop();
