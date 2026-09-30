@@ -435,10 +435,6 @@ button:focus-visible,.card:focus-visible{outline:2px solid var(--brass);outline-
     <div class="seg" data-k="wild">
       <button data-v="1">带王，王算任意点数</button><button data-v="0">不带王</button></div>
     <div class="tip">两副牌模式一律不带王，这项不起作用。</div></div>
-  <div class="opt"><div class="q">AI 多狠</div>
-    <div class="seg" data-k="hard">
-      <button data-v="1">狠：记牌、盯人、少乱吹</button><button data-v="0">普通</button></div>
-    <div class="tip">狠模式下七个人都会记翻开过的牌，抓得更准，收官更谨慎，还更爱盯着快出完的人。下一局生效。</div></div>
   <div class="opt"><div class="q">一手最多出几张</div>
     <div class="seg" data-k="max">
       <button data-v="2">2 张</button><button data-v="3">3 张</button><button data-v="4">4 张</button><button data-v="5">5 张</button></div></div>
@@ -540,8 +536,8 @@ const nm=i=>i===mySeat?'你':NAMES[i];
 const isAI=i=>SEATK[i]==='ai';
 
 /* ═══ 可调规则 ═══ */
-const VERSION='1.61';   // 改了东西就往上加，手机上看标题旁边那个号，能确认刷到新版没有
-const SET={deck:2,wild:1,max:2,burn:1,ai:1,sound:1,salty:1,pace:3,hard:1};
+const VERSION='1.62';   // 改了东西就往上加，手机上看标题旁边那个号，能确认刷到新版没有
+const SET={deck:2,wild:1,max:2,burn:1,ai:1,sound:1,salty:1,pace:3};
 const PACEF=()=>[1,.85,1.15,1.5][SET.pace]||1.5;   // 节奏：爽快/适中/悠着点，乘在 AI 思考和桌面停顿上
 try{ const _s=JSON.parse(localStorage.getItem('sxh_set')||'null');
      if(_s&&typeof _s==='object') for(const k in SET) if(typeof _s[k]==='number') SET[k]=_s[k];
@@ -716,7 +712,7 @@ function deal(){
   hands.forEach(h=>h.sort((a,b)=>sortKey(a)-sortKey(b)));
   pile=[];currentRank=null;lastPlay=null;roundClaimed=0;passStreak=0;roundBy=[0,0,0,0];
   over=false;winner=null;logs=[];selected=new Set();fresh=new Set();outQueue=[];
-  ECFG={wild:two?0:SET.wild,max:SET.max,burn:SET.burn,deck:two?2:1,per:per,hard:SET.hard};
+  ECFG={wild:two?0:SET.wild,max:SET.max,burn:SET.burn,deck:two?2:1,per:per,hard:1};   // AI 一律狠模式
   turn=Math.random()*4|0;          // 谁先出，抽签
   tilt={}; bubClear(); rage=[0,0,0,0]; coolCall=[0,0,0,0]; REC=[0,1,2,3].map(()=>({lies:0,truths:0})); banterEpoch++; rollPileJit(); rollBack();
   known=[{},{},{},{}]; roundLeaderId=null; mood=['','idle','idle','idle'];
@@ -1156,7 +1152,7 @@ function jitterProf(base){
     .forEach(k=>{ if(typeof p[k]==='number') p[k]=Math.min(.95,p[k]*J()); });
   p.truthMax=Math.min(.98,Math.max(.4,p.truthMax*J()));
   p.speed=[Math.round(p.speed[0]*J()),Math.round(p.speed[1]*J())].sort((a,b)=>a-b);
-  if(SET.hard){                                    // 狠模式：性格保留，底子全体拔高
+  {                                                // 狠：性格保留，底子全体拔高（不设开关，一律如此）
     p.counts=1; p.sniper=1;                        // 人人记牌、人人盯快出完的
     p.callBase=Math.min(.6,p.callBase+.05);        // 更敢抓
     p.callPerCard=Math.min(.3,p.callPerCard*1.5);  // 手里攥得越多越不信你
