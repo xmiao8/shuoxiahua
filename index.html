@@ -427,9 +427,18 @@ button:focus-visible,.card:focus-visible{outline:2px solid var(--brass);outline-
 
 <div class="sheet" id="setSheet"><div class="panel">
   <h2>设置</h2>
-  <div class="opt"><div class="q">牌里带不带大小王</div>
+  <div class="opt"><div class="q">用几副牌</div>
+    <div class="seg" data-k="deck">
+      <button data-v="2">一副去王 + 8 张随机 · 每人 15 张</button><button data-v="1">一副 · 每人 13 张</button></div>
+    <div class="tip">苗伯的规矩：一副牌去掉大小王，再从另一副里随机抽 8 张混进去，正好每人 15 张。哪几个点数多了、多了几张，谁也不知道——数牌只能数个大概。</div></div>
+  <div class="opt"><div class="q">一副牌的时候，带不带大小王</div>
     <div class="seg" data-k="wild">
-      <button data-v="1">带王，王算任意点数</button><button data-v="0">不带王</button></div></div>
+      <button data-v="1">带王，王算任意点数</button><button data-v="0">不带王</button></div>
+    <div class="tip">两副牌模式一律不带王，这项不起作用。</div></div>
+  <div class="opt"><div class="q">AI 多狠</div>
+    <div class="seg" data-k="hard">
+      <button data-v="1">狠：记牌、盯人、少乱吹</button><button data-v="0">普通</button></div>
+    <div class="tip">狠模式下七个人都会记翻开过的牌，抓得更准，收官更谨慎，还更爱盯着快出完的人。下一局生效。</div></div>
   <div class="opt"><div class="q">一手最多出几张</div>
     <div class="seg" data-k="max">
       <button data-v="2">2 张</button><button data-v="3">3 张</button><button data-v="4">4 张</button><button data-v="5">5 张</button></div></div>
@@ -513,11 +522,17 @@ const RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 const SUITS=['♠','♥','♣','♦'];
 const CN=['','一','二','三','四','五'];
 // NAMES/AVA 由 pickCast() 按本局人物填（开局前先给默认值，声明在人物池那边）
-const isJoker=c=>c>=52;
-const rk=c=>isJoker(c)?-1:c>>2;
-const st=c=>c&3;
+// 编码：0~51 第一副，52/53 大小王，60~111 第二副（两副牌模式）。点数花色按 base 算
+const isJoker=c=>c===52||c===53;
+const base=c=>c>=60?c-60:c;
+const rk=c=>isJoker(c)?-1:base(c)>>2;
+const st=c=>base(c)&3;
 const isRed=c=>c===53||(!isJoker(c)&&(st(c)===1||st(c)===3));
-const sortKey=c=>isJoker(c)?100+c:c;
+const sortKey=c=>isJoker(c)?300+c:base(c)*2+(c>=60?1:0);   // 同点同花的两张挨着排
+// 数牌的账：一副牌一个点数 4 张(+王)。苗伯模式再随机混进 8 张，一个点数最多可能到 12 张，
+// 但多出来的是哪几张谁也不知道——所以硬上限 12 只用来判"绝不可能"，日常起疑用软上限 5（期望值 4.6）
+const capT=()=>(ECFG.deck===2?12:4)+(ECFG.wild?2:0);
+const capSoft=()=>(ECFG.deck===2?5:4)+(ECFG.wild?2:0);
 // mySeat：本机玩家坐哪个座（单机和房主是 0，联机客人是 1~3）
 // SEATK：每个座位是谁在打——'human' 本机真人 / 'ai' 本机 AI / 'remote' 远端真人
 let mySeat=0, SEATK=['human','ai','ai','ai'], NET=null;
@@ -525,8 +540,8 @@ const nm=i=>i===mySeat?'你':NAMES[i];
 const isAI=i=>SEATK[i]==='ai';
 
 /* ═══ 可调规则 ═══ */
-const VERSION='1.58';   // 改了东西就往上加，手机上看标题旁边那个号，能确认刷到新版没有
-const SET={wild:1,max:2,burn:1,ai:1,sound:1,salty:1,pace:3};
+const VERSION='1.61';   // 改了东西就往上加，手机上看标题旁边那个号，能确认刷到新版没有
+const SET={deck:2,wild:1,max:2,burn:1,ai:1,sound:1,salty:1,pace:3,hard:1};
 const PACEF=()=>[1,.85,1.15,1.5][SET.pace]||1.5;   // 节奏：爽快/适中/悠着点，乘在 AI 思考和桌面停顿上
 try{ const _s=JSON.parse(localStorage.getItem('sxh_set')||'null');
      if(_s&&typeof _s==='object') for(const k in SET) if(typeof _s[k]==='number') SET[k]=_s[k];
@@ -622,10 +637,10 @@ function engineApply(act){
     if(currentRank===null){
       rank=act.rank|0;
       if(!(rank>=0&&rank<=12)) throw new Error('点数不对');
-      currentRank=rank; roundClaimed=0; roundLeaderId=act.seat;
+      currentRank=rank; roundClaimed=0; roundLeaderId=act.seat; roundBy=[0,0,0,0];
     } else rank=currentRank;
     hands[act.seat]=hand.filter(c=>!cards.includes(c));
-    roundClaimed+=cards.length;
+    roundClaimed+=cards.length; roundBy[act.seat]+=cards.length;
     pile.push(...cards);
     lastPlay={player:act.seat,rank:rank,cards:cards};
     passStreak=0;
@@ -664,7 +679,7 @@ function engineApply(act){
 }
 function serializeGame(){
   return JSON.stringify({proto:PROTO,cfg:ECFG,hands:hands,pile:pile,turn:turn,
-    currentRank:currentRank,roundClaimed:roundClaimed,passStreak:passStreak,
+    currentRank:currentRank,roundClaimed:roundClaimed,passStreak:passStreak,roundBy:roundBy,
     roundLeaderId:roundLeaderId,lastPlay:lastPlay,outQueue:outQueue,over:over,winner:winner,
     cast:NAMES.slice(1)});
 }
@@ -672,11 +687,12 @@ function loadGame(j){
   const g=typeof j==='string'?JSON.parse(j):j;
   if(g.proto!==PROTO) throw new Error('存档版本不合：'+g.proto);
   ECFG=g.cfg;hands=g.hands;pile=g.pile;turn=g.turn;currentRank=g.currentRank;
-  roundClaimed=g.roundClaimed;passStreak=g.passStreak;roundLeaderId=g.roundLeaderId;
+  roundClaimed=g.roundClaimed;passStreak=g.passStreak;roundLeaderId=g.roundLeaderId;roundBy=g.roundBy||[0,0,0,0];
   lastPlay=g.lastPlay;outQueue=g.outQueue;over=g.over;winner=g.winner;
 }
 
 /* ═══ 状态 ═══ */
+let roundBy=[0,0,0,0];   // 这一轮每人已经报过几张
 let hands,pile,turn,currentRank,lastPlay,roundClaimed,passStreak,over,winner,logs,selected,fresh,outQueue,
     humanResolve;
 const $=id=>document.getElementById(id);
@@ -685,18 +701,24 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function deal(){
   assignSeats();
   pickCast();
-  const total=(SET.wild?54:52);
-  const d=[...Array(total).keys()];
-  for(let i=total-1;i>0;i--){const j=Math.random()*(i+1)|0;[d[i],d[j]]=[d[j],d[i]];}
+  const two=SET.deck===2;
+  const one=[...Array(52).keys()];
+  let d;
+  if(two){                                             // 苗伯规矩：一副去王 + 从另一副里随机抽 8 张混进去 = 60 张，正好每人 15
+    const extra=one.map(c=>c+60); for(let i=extra.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[extra[i],extra[j]]=[extra[j],extra[i]];}
+    d=one.concat(extra.slice(0,8));
+  } else d=one.concat(SET.wild?[52,53]:[]);
+  for(let i=d.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[d[i],d[j]]=[d[j],d[i]];}
+  const per=two?15:13;
   hands=[[],[],[],[]];
   const off=Math.random()*4|0;
-  d.slice(0,52).forEach((c,i)=>hands[(i+off)%4].push(c));  // 每人 13 张
+  d.slice(0,per*4).forEach((c,i)=>hands[(i+off)%4].push(c));   // 一副时剩 2 张扣着不用
   hands.forEach(h=>h.sort((a,b)=>sortKey(a)-sortKey(b)));
-  pile=[];currentRank=null;lastPlay=null;roundClaimed=0;passStreak=0;
+  pile=[];currentRank=null;lastPlay=null;roundClaimed=0;passStreak=0;roundBy=[0,0,0,0];
   over=false;winner=null;logs=[];selected=new Set();fresh=new Set();outQueue=[];
-  ECFG={wild:SET.wild,max:SET.max,burn:SET.burn};
+  ECFG={wild:two?0:SET.wild,max:SET.max,burn:SET.burn,deck:two?2:1,per:per,hard:SET.hard};
   turn=Math.random()*4|0;          // 谁先出，抽签
-  tilt={}; bubClear(); rage=[0,0,0,0]; coolCall=[0,0,0,0]; banterEpoch++; rollPileJit(); rollBack();
+  tilt={}; bubClear(); rage=[0,0,0,0]; coolCall=[0,0,0,0]; REC=[0,1,2,3].map(()=>({lies:0,truths:0})); banterEpoch++; rollPileJit(); rollBack();
   known=[{},{},{},{}]; roundLeaderId=null; mood=['','idle','idle','idle'];
   Sfx.deal();
 }
@@ -1134,6 +1156,17 @@ function jitterProf(base){
     .forEach(k=>{ if(typeof p[k]==='number') p[k]=Math.min(.95,p[k]*J()); });
   p.truthMax=Math.min(.98,Math.max(.4,p.truthMax*J()));
   p.speed=[Math.round(p.speed[0]*J()),Math.round(p.speed[1]*J())].sort((a,b)=>a-b);
+  if(SET.hard){                                    // 狠模式：性格保留，底子全体拔高
+    p.counts=1; p.sniper=1;                        // 人人记牌、人人盯快出完的
+    p.callBase=Math.min(.6,p.callBase+.05);        // 更敢抓
+    p.callPerCard=Math.min(.3,p.callPerCard*1.5);  // 手里攥得越多越不信你
+    p.crowd=Math.min(.4,p.crowd*1.4);
+    p.junkMix=p.junkMix*.55;                       // 少乱掺假牌
+    p.truthMax=Math.max(p.truthMax,.85);           // 有真的就痛快出真的
+    p.exitD=Math.max(p.exitD,.93);                 // 不用假牌收官
+    p.guard=Math.max(p.guard,.97);                 // 收官手死死盯
+    p.passBluff=Math.min(.9,p.passBluff*1.15);     // 没真牌时更愿意过，不白送
+  }
   return p;
 }
 // 真人座位的头像：名字第一个字画进圆里
@@ -1144,7 +1177,7 @@ function humanAva(name){
     '<text x="24" y="31" text-anchor="middle" font-family="Songti SC,STSong,serif" font-size="18" fill="#F4EBD6">'+ch+'</text></svg>',
     post:'', f:null};
 }
-let tilt={}, rage=[0,0,0,0], coolCall=[0,0,0,0];   // coolCall：抓错之后冷静几轮，别跟牌堆怄气
+let tilt={}, rage=[0,0,0,0], coolCall=[0,0,0,0], REC=[{lies:0,truths:0},{lies:0,truths:0},{lies:0,truths:0},{lies:0,truths:0}];   // REC：这局每人翻开过几次真/假   // coolCall：抓错之后冷静几轮，别跟牌堆怄气
 // 每个座位一个气泡，各自计时：字越多挂得越久，别人说话不顶掉你的
 let BUBS={}, BUBQ={};
 function bubSet(p,b,ms){
@@ -1256,7 +1289,7 @@ function aiPlan(p){
   const jokers=ECFG.wild?hand.filter(isJoker):[];
   const threat=[0,1,2,3].find(i=>i!==p&&hands[i].length<=2);   // 有人快跑了
 
-  const capT=4+(ECFG.wild?2:0);
+  const capT_=capSoft();
   if(currentRank!==null){                       // 要不要过
     const real=hand.filter(c=>fits(c,currentRank)).length;
     let pp = real? P.passReal : P.passBluff;
@@ -1267,8 +1300,8 @@ function aiPlan(p){
     if(passStreak===2&&lastPlay&&hands[lastPlay.player].length<=4) pp*=.4;  // 再过一手就烧堆，等于白送他一轮先手
     if(!real){                                   // 没真牌时的硬纪律：这点数还装得下几张（放在所有系数之后，不被稀释）
       const after1=roundClaimed+1;
-      if(after1>capT)        pp=.98;             // 报不下了还吹是自杀
-      else if(after1>capT-2) pp=Math.max(pp,.88); // 人家刚甩了一大把，你跟一张谁信
+      if(after1>capT_)       pp=.98;             // 报不下了还吹是自杀
+      else if(after1>capT_-2) pp=Math.max(pp,.88); // 人家刚甩了一大把，你跟一张谁信
     }
     if(Math.random()<pp) return {act:'pass'};
   }
@@ -1301,7 +1334,7 @@ function aiPlan(p){
     let mix=hot?P.junkMix+.30:P.junkMix;
     if(pile.length<=4) mix+=.10;                // 堆小，掺一张假的便宜
     if(pile.length>12) mix*=.5;                 // 堆大，被逮着背不起
-    if(!lead&&roundClaimed+cards.length>=capT) mix*=.25;     // 这点数快报满了，别再掺
+    if(!lead&&roundClaimed+cards.length>=capT_) mix*=.25;     // 这点数快报满了，别再掺
     if(Math.random()<mix&&cards.length<ECFG.max){
       const junk=hand.filter(c=>!cards.includes(c)&&!(ECFG.wild&&isJoker(c)))
                      .sort((x,y)=>by[rk(x)].length-by[rk(y)].length)[0];
@@ -1336,7 +1369,7 @@ function chat(p,kind,rate){
   const S=P.talk.salty;
   if(SET.salty&&S&&S[kind]&&S[kind].length){
     // 火气越大嘴越脏：没背过牌堆基本干净，背两三堆之后满嘴跑火车；手牌攒多了也焦躁
-    const heat=Math.min(.85,Math.max(0,(rage[p]||0)-1)*.35+Math.max(0,hands[p].length-14)*.04);   // 背第一堆忍着，第二堆起才上脏口
+    const heat=Math.min(.85,Math.max(0,(rage[p]||0)-1)*.35+Math.max(0,hands[p].length-((ECFG.per||13)+1))*.04);   // 背第一堆忍着，第二堆起才上脏口
     pool = Math.random()<heat ? S[kind] : pool;
   }
   const line=pick(pool); if(!line) return;
@@ -1349,57 +1382,61 @@ function speak2(p,line){
 }
 
 function aiChallenge(p,P,hot){
-  const cap=4+(ECFG.wild?2:0), R=lastPlay.rank, k=lastPlay.cards.length, q=lastPlay.player;
+  const hardCap=capT(), R=lastPlay.rank, k=lastPlay.cards.length, q=lastPlay.player;
   const mine=hands[p].filter(c=>fits(c,R)).length;
-  if(k+mine>cap) return true;                   // 铁证：加上我攥着的，数就放不下了
-  let knownElse=0;
-  if(P.counts){                                 // 小赵记得翻开过的牌都到了谁手里
-    for(let i=0;i<4;i++) if(i!==p&&i!==q) knownElse+=(known[i][R]||0)+(ECFG.wild?(known[i].j||0):0);
-    if(k+mine+knownElse>cap) return true;       // 铁证二：明牌都对不上
+  if(k+mine>hardCap) return true;               // 铁证：连随机加的牌都算上也放不下
+  let knownElse=0, knownAll=0;                  // 翻开过的牌都到了谁手里（记牌的人才算）
+  if(P.counts){
+    for(let i=0;i<4;i++){ const kr=(known[i][R]||0)+(ECFG.wild?(known[i].j||0):0); knownAll+=kr; if(i!==p&&i!==q) knownElse+=kr; }
+    if(k+mine+knownElse>hardCap) return true;
   }
   const left=hands[q].length;
 
+  /* ── 这一手是吹的概率 pLie：几千手模拟对局拟合出来的逻辑回归（docs/strategy.md 有数据）。
+     最管用的信号不是数牌，是结构：开新一轮的人几乎不吹（挑的是自己最多的点数），跟牌的一半在吹，
+     本轮已经报过一次还接着报的九成在吹，我自己攥得越多他越假，报两张（成对）多半是真的。
+     再叠上他这局和跨局的吹牛前科。 */
+  const before=Math.max(0,roundClaimed-k);
+  const knownQ=P.counts?(known[q][R]||0):0;
+  const rc=REC[q]||{lies:0,truths:0};
+  let bq=(rc.lies*.7+.55)/(rc.lies*.7+rc.truths+2);        // 他这局翻开过的记录（白纸≈0.27）
+  if(q===mySeat&&SEATK[q]==='human'){                       // 本机真人还看跨局旧账
+    const c=MEM.humanCaught+humCaughtS, h=(MEM.humanHonest||0)+humHonestS;
+    bq=(bq+(c+.7)/(c+h+2))/2;
+  }
+  let z=-.14
+    -2.65*(q===roundLeaderId?1:0)                            // 领牌：基本是真的
+    +1.66*(roundBy[q]-k>0?1:0)                               // 本轮已经报过，还报
+    +.70*(Math.min(mine,4)/4)                                // 我攥着的
+    -1.01*(k-1)                                              // 报得越多越像真套
+    +.06*(left<=3?1:0)-.32*(left>=12?1:0)                    // 牌少的攒真牌，牌多的也不见得乱吹
+    +1.15*(Math.min(before,6)/6)                             // 这轮已经报出去多少
+    +.29*(Math.min(pile.length,20)/20)
+    -.09*(knownQ>=k?1:0)
+    +1.5*(bq-.27);                                           // 前科
+  let pLie=1/(1+Math.exp(-z));
+  if(window.__cal) window.__cal.push({pLie:pLie,mine:mine,k:k,left:left,leader:q===roundLeaderId?1:0,qBefore:roundBy[q]-k,before:before,pileN:pile.length,knownQ:knownQ,lie:!lastPlay.cards.every(c=>fits(c,R))});
+
   if(left===0){
-    // 他这一手出完就赢。这里的账很简单：他要是真的，抓不抓我都输；
-    // 他要是吹的，只有抓才有救。所以宁可错抓，不可放过。
-    const behind=(q-p-1+4)%4;                   // 我后面还剩几道闸
-    let prob = behind===0? P.guard : P.guard*(behind===1?.72:.55);
-    if(q===roundLeaderId) prob*=.65;            // 点数他自己定的，多半早备好了真牌
-    else prob=Math.min(.99,prob*1.3);           // 被点数逼出来的收官，可疑得很
-    if(P.counts&&(known[q][R]||0)>=k) prob*=.4; // 小赵记得他手里真有这个数
-    prob+=.06*mine;
+    // 他这一手出完就赢：真的我抓不抓都输，吹的只有抓才有救 —— 宁可错抓
+    let prob=Math.max(P.guard*(q===roundLeaderId?.7:1), pLie);
+    if(P.counts&&(known[q][R]||0)>=k) prob*=.4;
     if(hot) prob=Math.min(.99,prob+.05);
-    if(coolCall[p]) prob*=.6;                   // 刚抓错：收官照抓，但收着点
-    return Math.random()<prob;
+    if(coolCall[p]) prob*=.6;
+    return Math.random()<Math.min(.99,prob);
   }
 
-  let prob=P.callBase + mine*P.callPerCard;     // 我攥着越多，他越可疑
-  const before=Math.max(0,roundClaimed-k), room=Math.max(0,cap-mine-knownElse-k);
-  if(before>room) prob+=P.crowd*Math.min(4,before-room);   // 这轮吹过头了，气氛可疑
-  // 这一手要是真的，这个点数全场的余量还剩多少
-  const slack=Math.max(0,cap-mine-knownElse-k);
-  if(k>=3){
-    if(slack<=0)      prob+=.18;    // 挤到刚好放下：所有真牌都得在他手里，可疑
-    else if(slack===1) prob+=.08;
-    else               prob*=.7;    // 宽裕的大把多半是真套，别瞎抓白背牌
-  }else{
-    prob+=.05*Math.max(0,2-slack);
-    if(before>=4) prob+=.12;                    // 大把之后还跟小的，往往是硬挤，重点盯
-  }
-  if(left<=2) prob+=.15+(P.sniper?.10:0);       // 快出完的人，重点照顾
-  else if(P.sniper&&left<=4) prob+=.06;
-  if(q===mySeat&&SEATK[q]==='human'){           // 对本机真人看信用：惯犯多抓，老实人少抓（旧账也算）
-    // 白纸记录 ≈ 一般人的吹牛率(~0.35)，别一上来就当嫌疑人
-    const c=MEM.humanCaught+humCaughtS, h=(MEM.humanHonest||0)+humHonestS;
-    prob*= Math.min(1.35, .5+1.4*((c+.7)/(c+h+2)));
-  }
-  if(P.counts&&(known[q][R]||0)>=k) prob*=.5;   // 明知他有真牌，少冤枉
-  if(hot) prob+=.08;                            // 上头的疯劲儿留给出牌，抓牌只加一半
-  if(coolCall[p]) prob*=.3;                     // 刚抓错背了堆：冷静两轮
-  prob*=Math.max(.55,1.15-.028*pile.length);    // 堆越大，抓错越亏（但也别怂到不敢抓）
-  if(hands[p].length<=4) prob*=.7;              // 自己快赢了，背不起一堆牌
-  else if(pile.length<=3) prob*=1.1;
-  if(passStreak===2&&left<=4) prob+=.15;        // 再过就烧堆白送他先手
+  /* ── 抓不抓：疑心过线才抓，线以下偶尔试探。性格改的是这条线，不是乱加系数 ── */
+  let th = ECFG.hard? .54 : .64;
+  th -= (P.callBase-.08)*1.2;                           // 爱抓的人线低
+  th += Math.min(.15,.012*Math.max(0,pile.length-6));   // 堆大了，抓错太亏，要更有把握
+  if(hands[p].length<=4) th+=.06;                       // 自己快赢了，别冒险背堆
+  if(left<=2) th-=.08+(P.sniper?.06:0);                 // 快出完的人，重点照顾
+  if(passStreak===2&&left<=4) th-=.08;                  // 再过就烧堆白送他先手
+  if(hot) th-=.06;
+  if(coolCall[p]) th+=.15;                              // 刚抓错背了堆：冷静两轮
+  th=Math.min(.9,Math.max(.25,th));
+  let prob = pLie>=th ? Math.min(.97,.6+(pLie-th)*2.5) : (pLie/th)*P.callBase*.3;   // 过线就抓，线下偶尔试探
   return Math.random()<prob;
 }
 
@@ -1446,6 +1483,7 @@ async function presentReveal(ev){
   ev.gained.forEach(c=>fresh.add(c));
   cards.forEach(c=>{ const key=isJoker(c)?'j':rk(c); known[loser][key]=(known[loser][key]||0)+1; }); // 桌面见过的牌，全桌都记得到了谁手里
   Sfx.pickup(pn);
+  if(REC[p]) { if(truth) REC[p].truths++; else REC[p].lies++; }   // 记前科
   rage[loser]=(rage[loser]||0)+1;                       // 背一次牌堆，火气 +1
   if(truth&&isAI(q)) coolCall[q]=2;                     // 抓错了：接下来两轮冷静，别连环送
   if(isAI(loser)&&PROFILE[loser]&&PROFILE[loser].tiltable) tilt[loser]=PROFILE[loser].tiltable;  // 谁收了牌谁上头
@@ -1959,11 +1997,12 @@ async function loop(){
 /* ═══ 设置与规则文案 ═══ */
 function paintRules(){
   const r=[
-    SET.wild? '一副牌带大小王，每人 13 张，剩 2 张扣在一边不用。'
-            : '一副牌 52 张，每人 13 张。',
+    SET.deck===2 ? '<b>一副牌去掉大小王，再从另一副里随机抽 8 张混进去</b>，共 60 张，每人 15 张全发完。每个点数至少 4 张、最多可能 12 张——多出来的是哪几张，谁也不知道。'
+    : SET.wild? '一副牌带大小王，每人 13 张，剩 2 张扣在一边不用。'
+              : '一副牌 52 张，每人 13 张。',
     '新一轮由出牌的人定点数，之后所有人都得报<b>同一个点数</b>。',
     '轮到你可以出 1–'+SET.max+' 张扣着的牌，<b>也可以过</b>——手里有真牌照样能过。开新一轮的人必须出。',
-    '张数不能骗，点数可以骗。'+(SET.wild?'<b>大小王算任意点数</b>，翻开也不算骗。':''),
+    '张数不能骗，点数可以骗。'+((SET.deck!==2&&SET.wild)?'<b>大小王算任意点数</b>，翻开也不算骗。':''),
     '三家连着都过，'+(SET.burn?'桌上这堆牌作废':'最后出牌的人收走这堆')+'，然后由最后出牌那人开新一轮。',
     '<b>只有下家能抓</b>——轮到你的时候，你可以出牌、过、或者喊“说瞎话”抓上家。你要是过了，抓的机会就传给下一个人。',
     '抓对了：出牌的人收走整桌，<b>抓的人接着出</b>。抓错了：抓的人收走整桌，<b>被抓的人接着出</b>。',
