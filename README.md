@@ -52,7 +52,7 @@ key **只存在你自己手机的浏览器里**，不会写进代码、不会上
 
 ## 掼蛋
 
-同一个仓库里还有一个掼蛋：`guandan.html`，两副牌 2v2，你和对家对三个电脑。规则按小红书「掼蛋新手必看」那套整理在 `docs/guandan-rules.md`。在线地址跟上面同一个站点，后面加 `/guandan.html`。
+掼蛋单独一个仓库：https://github.com/xmiao8/guandan （在线玩：https://xmiao8.github.io/guandan/ ）
 
 ## 开发
 
