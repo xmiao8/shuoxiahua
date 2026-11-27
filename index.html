@@ -377,6 +377,28 @@ button:focus-visible,.card:focus-visible{outline:2px solid var(--brass);outline-
   #hint{margin-top:4px}
 }
 @media (max-height:600px){ #stage{height:118px} .pile{height:56px} }
+/* ─── English ─── */
+html[lang=en] body,html[lang=en] button,html[lang=en] input{font-family:-apple-system,system-ui,"Segoe UI",Roboto,"Helvetica Neue",sans-serif}
+html[lang=en] h1,html[lang=en] .stitle,html[lang=en] .plaque,html[lang=en] #winner,html[lang=en] .panel h2,html[lang=en] .stamp{font-family:Georgia,"Times New Roman",serif}
+html[lang=en] h1{font-size:19px;letter-spacing:.03em;text-indent:0}
+html[lang=en] .stitle{font-size:34px;letter-spacing:.03em;text-indent:0;white-space:normal;text-align:center;line-height:1.15}
+html[lang=en] .ssub{letter-spacing:.12em;text-indent:.12em}
+html[lang=en] .plaque{font-size:21px;letter-spacing:.04em}
+html[lang=en] .who{letter-spacing:.06em}
+html[lang=en] .stamp{font-size:17px;letter-spacing:.06em;text-indent:.06em}
+html[lang=en] #winner{letter-spacing:.04em;text-indent:0}
+html[lang=en] .label .lt{letter-spacing:.12em}
+html[lang=en] .mtag{letter-spacing:.03em;font-size:8.5px}
+html[lang=en] .seat .nm{letter-spacing:0;font-size:12px}
+html[lang=en] #hand .card.fresh::before{content:"NEW";font-size:7.5px}
+html[lang=en] .card.joker .idx b{font-size:12px}
+html[lang=en] .card.joker .idx i{font-size:8px}
+.langbtn{position:absolute;top:calc(14px + env(safe-area-inset-top));right:16px;background:none;
+  border:1px solid rgba(199,154,78,.4);border-radius:14px;color:var(--dim);font-family:inherit;
+  font-size:12px;padding:5px 12px;cursor:pointer;letter-spacing:.06em}
+.langbtn:hover{color:var(--brass);border-color:var(--brass)}
+@media (max-height:700px){html[lang=en] .stitle{font-size:28px}}
+@media (max-height:800px){html[lang=en] h1{font-size:18px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -384,10 +406,10 @@ button:focus-visible,.card:focus-visible{outline:2px solid var(--brass);outline-
 <div id="app">
   <header>
     <div class="brand">
-      <h1>苗伯说瞎话<span class="ver" id="ver"></span></h1>
+      <h1><span data-en="Uncle Miao’s Bluff">苗伯说瞎话</span><span class="ver" id="ver"></span></h1>
       <div class="tools">
-        <button id="rulesBtn">规则</button>
-        <button id="setBtn">设置</button>
+        <button id="rulesBtn" data-en="Rules">规则</button>
+        <button id="setBtn" data-en="Settings">设置</button>
       </div>
     </div>
     <div class="rule2"></div>
@@ -400,7 +422,7 @@ button:focus-visible,.card:focus-visible{outline:2px solid var(--brass);outline-
   <div id="etoast"></div>
 <div id="handwrap">
     <div id="ebar"></div>
-    <div class="label"><span class="lt">你的手牌 <span id="handct"></span></span><button id="emoteBtn" style="display:none">喊话</button></div>
+    <div class="label"><span class="lt"><span data-en="YOUR HAND">你的手牌</span> <span id="handct"></span></span><button id="emoteBtn" style="display:none" data-en="Chat">喊话</button></div>
     <div id="handscroll"><div id="hand"></div></div>
     <div id="controls"></div>
     <div id="hint"></div>
@@ -409,110 +431,114 @@ button:focus-visible,.card:focus-visible{outline:2px solid var(--brass);outline-
 
 <div id="startSheet">
   <div class="sdeco"><div class="bk"></div><div class="bk"></div><div class="bk"></div></div>
-  <div class="stitle">苗伯说瞎话</div>
+  <button class="langbtn" id="langBtn"></button>
+  <div class="stitle" data-en="Uncle Miao’s Bluff">苗伯说瞎话</div>
   <div class="srule"></div>
-  <div class="ssub">一副牌 · 四个人 · 全凭一张嘴</div>
-  <button id="startBtn">开 始 打 牌</button>
+  <div class="ssub" data-en="One deck · Four players · All talk">一副牌 · 四个人 · 全凭一张嘴</div>
+  <button id="startBtn" data-en="DEAL ME IN">开 始 打 牌</button>
   <div class="netrow">
-    <button class="netbtn" id="hostBtn">联机 · 开房</button>
-    <button class="netbtn" id="joinBtn">联机 · 加入</button>
+    <button class="netbtn" id="hostBtn" data-en="Online · Host">联机 · 开房</button>
+    <button class="netbtn" id="joinBtn" data-en="Online · Join">联机 · 加入</button>
   </div>
-  <button id="startRules">先看规则</button>
+  <button id="startRules" data-en="How to play">先看规则</button>
   <div class="sver" id="sver"></div>
 </div>
 
 <div class="sheet" id="rulesSheet"><div class="panel">
-  <h2>玩法</h2>
+  <h2 data-en="How to play">玩法</h2>
   <ol id="ruleList"></ol>
-  <p>规则跟你爸爸记的不一样？告诉我哪儿不对，我改。</p>
-  <button class="act primary" id="rulesClose" style="width:100%">知道了</button>
+  <p data-en="Not how your dad plays it? Tell me what’s off and I’ll fix it.">规则跟你爸爸记的不一样？告诉我哪儿不对，我改。</p>
+  <button class="act primary" id="rulesClose" style="width:100%" data-en="Got it">知道了</button>
 </div></div>
 
 <div class="sheet" id="setSheet"><div class="panel">
-  <h2>设置</h2>
-  <div class="opt"><div class="q">用几副牌</div>
+  <h2 data-en="Settings">设置</h2>
+  <div class="opt"><div class="q">语言 · Language</div>
+    <div class="seg" data-k="lang">
+      <button data-v="0">中文</button><button data-v="1">English</button></div></div>
+  <div class="opt"><div class="q" data-en="Deck">用几副牌</div>
     <div class="seg" data-k="deck">
-      <button data-v="2">一副去王 + 8 张随机 · 每人 15 张</button><button data-v="1">一副 · 每人 13 张</button></div>
-    <div class="tip">苗伯的规矩：一副牌去掉大小王，再从另一副里随机抽 8 张混进去，正好每人 15 张。哪几个点数多了、多了几张，谁也不知道——数牌只能数个大概。</div></div>
-  <div class="opt"><div class="q">一副牌的时候，带不带大小王</div>
+      <button data-v="2" data-en="No jokers + 8 random · 15 each">一副去王 + 8 张随机 · 每人 15 张</button><button data-v="1" data-en="One deck · 13 each">一副 · 每人 13 张</button></div>
+    <div class="tip" data-en="Uncle Miao’s rule: take one deck, remove the jokers, then shuffle in 8 random cards from a second deck — exactly 15 each. Nobody knows which ranks got extras or how many, so counting only gets you so far.">苗伯的规矩：一副牌去掉大小王，再从另一副里随机抽 8 张混进去，正好每人 15 张。哪几个点数多了、多了几张，谁也不知道——数牌只能数个大概。</div></div>
+  <div class="opt"><div class="q" data-en="Jokers (single-deck mode)">一副牌的时候，带不带大小王</div>
     <div class="seg" data-k="wild">
-      <button data-v="1">带王，王算任意点数</button><button data-v="0">不带王</button></div>
-    <div class="tip">两副牌模式一律不带王，这项不起作用。</div></div>
-  <div class="opt"><div class="q">一手最多出几张</div>
+      <button data-v="1" data-en="Jokers in, wild">带王，王算任意点数</button><button data-v="0" data-en="No jokers">不带王</button></div>
+    <div class="tip" data-en="The 60-card mode never has jokers, so this does nothing there.">两副牌模式一律不带王，这项不起作用。</div></div>
+  <div class="opt"><div class="q" data-en="Max cards per play">一手最多出几张</div>
     <div class="seg" data-k="max">
-      <button data-v="2">2 张</button><button data-v="3">3 张</button><button data-v="4">4 张</button><button data-v="5">5 张</button></div></div>
-  <div class="opt"><div class="q">三家都过之后，桌上那堆牌</div>
+      <button data-v="2" data-en="2">2 张</button><button data-v="3" data-en="3">3 张</button><button data-v="4" data-en="4">4 张</button><button data-v="5" data-en="5">5 张</button></div></div>
+  <div class="opt"><div class="q" data-en="When the other three all pass, the pile…">三家都过之后，桌上那堆牌</div>
     <div class="seg" data-k="burn">
-      <button data-v="1">作废不要</button><button data-v="0">最后出牌的人收走</button></div></div>
-  <div class="opt"><div class="q">让 DeepSeek 帮他们斗嘴</div>
+      <button data-v="1" data-en="Is discarded">作废不要</button><button data-v="0" data-en="Goes to the last player">最后出牌的人收走</button></div></div>
+  <div class="opt"><div class="q" data-en="Let DeepSeek write their trash talk">让 DeepSeek 帮他们斗嘴</div>
     <div class="seg" data-k="ai">
-      <button data-v="1">开（要填 key）</button><button data-v="0">只用写好的词</button></div>
-    <div class="tip">牌怎么打永远是本地说了算，大模型只负责翻牌和终局时现编台词，还会翻旧账。没网、没 key、超时，都自动用写好的词。</div></div>
-  <div class="opt"><div class="q">AI 对手 · 点将（选中谁谁上桌，不选或不够就随机补）</div>
+      <button data-v="1" data-en="On (needs a key)">开（要填 key）</button><button data-v="0" data-en="Scripted lines only">只用写好的词</button></div>
+    <div class="tip" data-en="The cards are always played by the built-in AI. The language model only improvises lines at big moments (reveals, game end) and brings up old grudges. No network, no key, or a timeout — it falls back to the scripted lines.">牌怎么打永远是本地说了算，大模型只负责翻牌和终局时现编台词，还会翻旧账。没网、没 key、超时，都自动用写好的词。</div></div>
+  <div class="opt"><div class="q" data-en="AI opponents · pick who sits in (none or too few = random)">AI 对手 · 点将（选中谁谁上桌，不选或不够就随机补）</div>
     <div class="castpick" id="castPick"></div>
-    <div class="tip">下一局生效。被真人挑走当头像的人物会自动让位。</div></div>
-  <div class="opt"><div class="q">他仨嘴里干不干净</div>
+    <div class="tip" data-en="Applies next game. A character a human picked as their avatar steps aside.">下一局生效。被真人挑走当头像的人物会自动让位。</div></div>
+  <div class="opt"><div class="q" data-en="How they talk">他仨嘴里干不干净</div>
     <div class="seg" data-k="salty">
-      <button data-v="1">带脏字，过瘾</button><button data-v="0">文明点</button></div></div>
-  <div class="opt"><div class="q">节奏（AI 出手快慢、翻牌停顿）</div>
+      <button data-v="1" data-en="Salty, swears and all">带脏字，过瘾</button><button data-v="0" data-en="Keep it clean">文明点</button></div></div>
+  <div class="opt"><div class="q" data-en="Pace (AI speed, pauses on reveals)">节奏（AI 出手快慢、翻牌停顿）</div>
     <div class="seg" data-k="pace">
-      <button data-v="1">爽快</button><button data-v="2">适中</button><button data-v="3">悠着点</button></div></div>
-  <div class="opt"><div class="q">音效</div>
+      <button data-v="1" data-en="Brisk">爽快</button><button data-v="2" data-en="Medium">适中</button><button data-v="3" data-en="Relaxed">悠着点</button></div></div>
+  <div class="opt"><div class="q" data-en="Sound">音效</div>
     <div class="seg" data-k="sound">
-      <button data-v="1">开</button><button data-v="0">关</button></div></div>
+      <button data-v="1" data-en="On">开</button><button data-v="0" data-en="Off">关</button></div></div>
   <div class="opt"><div class="q">DeepSeek API Key</div>
     <input id="keyInput" type="password" placeholder="sk-..." autocomplete="off">
     <div class="tip" id="keyTip">不填就全用写好的词。只存在这台手机上，不写进文件。</div>
   </div>
-  <div class="opt"><div class="q">旧账</div>
+  <div class="opt"><div class="q" data-en="The grudge book">旧账</div>
     <div class="tip" id="memLine"></div>
-    <button class="act" id="memReset" style="width:100%;margin-top:6px">旧账一笔勾销</button></div>
-  <p>牌桌规则（王、张数、作废）下一局生效；其余马上生效。</p>
+    <button class="act" id="memReset" style="width:100%;margin-top:6px" data-en="Wipe the slate clean">旧账一笔勾销</button></div>
+  <p data-en="Table rules (jokers, max cards, discard) apply next game; everything else applies now.">牌桌规则（王、张数、作废）下一局生效；其余马上生效。</p>
   <div style="display:flex;gap:8px">
-    <button class="act" id="setBack" style="flex:1">继续这一局</button>
-    <button class="act primary" id="setClose" style="flex:1">开新一局</button>
+    <button class="act" id="setBack" style="flex:1" data-en="Back to game">继续这一局</button>
+    <button class="act primary" id="setClose" style="flex:1" data-en="New game">开新一局</button>
   </div>
   <div class="tip" style="text-align:center;margin-top:12px" id="verFull"></div>
 </div></div>
 
 <div class="sheet" id="netSheet"><div class="panel">
   <div id="netHost" style="display:none">
-    <h2>开房</h2>
-    <p>他们点「联机 · 加入」就能进来。人齐了开打，空位 AI 补。</p>
-    <div class="opt"><div class="q">你的名字</div>
-      <input id="hostName" maxlength="8" placeholder="房主"></div>
-    <div class="opt"><div class="q">你的头像</div><div class="avapick" id="hostAva"></div></div>
-    <div class="opt"><div class="q">已入座</div><div class="tip" id="lobbyList">就你一个</div></div>
+    <h2 data-en="Host a table">开房</h2>
+    <p data-en="Others tap “Online · Join” to come in. Start when everyone’s here — AI fills any empty seats.">他们点「联机 · 加入」就能进来。人齐了开打，空位 AI 补。</p>
+    <div class="opt"><div class="q" data-en="Your name">你的名字</div>
+      <input id="hostName" maxlength="8" placeholder="房主" data-enph="Host"></div>
+    <div class="opt"><div class="q" data-en="Your avatar">你的头像</div><div class="avapick" id="hostAva"></div></div>
+    <div class="opt"><div class="q" data-en="Seated">已入座</div><div class="tip" id="lobbyList">就你一个</div></div>
     <div class="tip" id="netStatusH"></div>
     <div style="display:flex;gap:8px;margin-top:10px">
-      <button class="act" id="hostCancel" style="flex:1">散伙</button>
-      <button class="act primary" id="hostGo" style="flex:1">开打</button>
+      <button class="act" id="hostCancel" style="flex:1" data-en="Close table">散伙</button>
+      <button class="act primary" id="hostGo" style="flex:1" data-en="Start">开打</button>
     </div>
   </div>
   <div id="netJoin" style="display:none">
-    <h2>上桌</h2>
-    <div class="opt"><div class="q">你的名字</div>
-      <input id="joinName" maxlength="8" placeholder="怎么称呼"></div>
-    <div class="opt"><div class="q">你的头像</div><div class="avapick" id="joinAva"></div></div>
+    <h2 data-en="Join the table">上桌</h2>
+    <div class="opt"><div class="q" data-en="Your name">你的名字</div>
+      <input id="joinName" maxlength="8" placeholder="怎么称呼" data-enph="What should we call you?"></div>
+    <div class="opt"><div class="q" data-en="Your avatar">你的头像</div><div class="avapick" id="joinAva"></div></div>
     <div class="tip" id="netStatus"></div>
     <div style="display:flex;gap:8px;margin-top:10px">
-      <button class="act" id="joinCancel" style="flex:1">算了</button>
-      <button class="act primary" id="joinGo" style="flex:1">加入</button>
+      <button class="act" id="joinCancel" style="flex:1" data-en="Never mind">算了</button>
+      <button class="act primary" id="joinGo" style="flex:1" data-en="Join">加入</button>
     </div>
   </div>
 </div></div>
 
 <div class="sheet" id="rankSheet"><div class="panel">
-  <h2>这一轮报什么点数</h2>
+  <h2 data-en="What rank are you calling?">这一轮报什么点数</h2>
   <p id="rankHint"></p>
   <div class="ranks" id="rankGrid"></div>
-  <button class="act" id="rankCancel" style="width:100%;margin-top:14px">先不出，回去改牌</button>
+  <button class="act" id="rankCancel" style="width:100%;margin-top:14px" data-en="Not yet — back to my cards">先不出，回去改牌</button>
 </div></div>
 
 <div class="sheet" id="overSheet"><div class="panel">
   <div id="winner"></div>
   <p id="overText" style="text-align:center"></p>
-  <button class="act primary" id="againBtn" style="width:100%;margin-top:8px">再来一局</button>
+  <button class="act primary" id="againBtn" style="width:100%;margin-top:8px" data-en="Play again">再来一局</button>
 </div></div>
 
 <script>
@@ -535,12 +561,22 @@ const capSoft=()=>(ECFG.deck===2?5:4)+(ECFG.wild?2:0);
 // mySeat：本机玩家坐哪个座（单机和房主是 0，联机客人是 1~3）
 // SEATK：每个座位是谁在打——'human' 本机真人 / 'ai' 本机 AI / 'remote' 远端真人
 let mySeat=0, SEATK=['human','ai','ai','ai'], NET=null;
-const nm=i=>i===mySeat?'你':NAMES[i];
+const nm=i=>i===mySeat?L('你','You'):dn(NAMES[i]);
+const nmi=i=>i===mySeat?L('你','you'):dn(NAMES[i]);   // 句中用：英文小写 you
+const vb=(i,a,b)=>i===mySeat?a:b;                      // 英文主谓一致：You claim / Old Li claims
+const poss=i=>i===mySeat?'Your':dn(NAMES[i])+'’s';
 const isAI=i=>SEATK[i]==='ai';
 
 /* ═══ 可调规则 ═══ */
-const VERSION='1.65';   // 改了东西就往上加，手机上看标题旁边那个号，能确认刷到新版没有
-const SET={deck:2,wild:1,max:2,burn:1,ai:1,sound:1,salty:1,pace:3};
+const VERSION='1.66';   // 改了东西就往上加，手机上看标题旁边那个号，能确认刷到新版没有
+// 语言：老用户（存过设置的）默认中文；新设备按浏览器语言，不是中文就英文
+const LANG_DEF=(()=>{ try{ if(localStorage.getItem('sxh_set')) return 0; }catch(e){} return /^zh/i.test(navigator.language||'')?0:1; })();
+const SET={deck:2,wild:1,max:2,burn:1,ai:1,sound:1,salty:1,pace:3,lang:LANG_DEF};
+const EN=()=>SET.lang===1;
+const L=(zh,en)=>SET.lang===1?en:zh;
+// 人物名字的英文显示。内部（存档、旧账、联机）一律用中文名，只在显示时换
+const NAME_EN={'老李':'Old Li','王姐':'Sis Wang','小赵':'Young Zhao','铁子':'Tiezi','陈教授':'Prof. Chen','幺妹':'Yaomei','发叔':'Uncle Fa','你':'You','房主':'Host','玩家':'Player'};
+const dn=n=>(SET.lang===1&&NAME_EN[n])||n;
 const PACEF=()=>[1,.85,1.15,1.5][SET.pace]||1.5;   // 节奏：爽快/适中/悠着点，乘在 AI 思考和桌面停顿上
 try{ const _s=JSON.parse(localStorage.getItem('sxh_set')||'null');
      if(_s&&typeof _s==='object') for(const k in SET) if(typeof _s[k]==='number') SET[k]=_s[k];
@@ -623,19 +659,19 @@ function engineLegal(seat){
            call:currentRank!==null&&!!lastPlay&&lastPlay.player!==seat };
 }
 function engineApply(act){
-  if(over) throw new Error('牌局已结束');
-  if(act.seat!==turn) throw new Error('还没轮到 '+act.seat);
+  if(over) throw new Error(L('牌局已结束','The game is over'));
+  if(act.seat!==turn) throw new Error(L('还没轮到 ','Not your turn: ')+act.seat);
   const ev=[];
   if(act.t==='play'){
     const cards=act.cards.slice();
-    if(cards.length<1||cards.length>ECFG.max) throw new Error('张数不对');
-    if(new Set(cards).size!==cards.length) throw new Error('有重复牌');
+    if(cards.length<1||cards.length>ECFG.max) throw new Error(L('张数不对','Wrong number of cards'));
+    if(new Set(cards).size!==cards.length) throw new Error(L('有重复牌','Duplicate cards'));
     const hand=hands[act.seat];
-    if(!cards.every(c=>hand.includes(c))) throw new Error('不是你的牌');
+    if(!cards.every(c=>hand.includes(c))) throw new Error(L('不是你的牌','Those aren’t your cards'));
     let rank;
     if(currentRank===null){
       rank=act.rank|0;
-      if(!(rank>=0&&rank<=12)) throw new Error('点数不对');
+      if(!(rank>=0&&rank<=12)) throw new Error(L('点数不对','Invalid rank'));
       currentRank=rank; roundClaimed=0; roundLeaderId=act.seat; roundBy=[0,0,0,0];
     } else rank=currentRank;
     hands[act.seat]=hand.filter(c=>!cards.includes(c));
@@ -647,7 +683,7 @@ function engineApply(act){
     ev.push({e:'played',seat:act.seat,rank:rank,n:cards.length,out:hands[act.seat].length===0});
     turn=(turn+1)%4;
   }else if(act.t==='pass'){
-    if(currentRank===null) throw new Error('开新一轮必须出牌');
+    if(currentRank===null) throw new Error(L('开新一轮必须出牌','You must play to start a round'));
     passStreak++;
     ev.push({e:'passed',seat:act.seat,claimSeat:lastPlay.player,claimN:lastPlay.cards.length,rank:currentRank});
     if(passStreak>=3){
@@ -660,7 +696,7 @@ function engineApply(act){
       currentRank=null;roundClaimed=0;passStreak=0;roundLeaderId=null;lastPlay=null;turn=leader;
     } else turn=(turn+1)%4;
   }else if(act.t==='call'){
-    if(currentRank===null||!lastPlay||lastPlay.player===act.seat) throw new Error('现在不能抓');
+    if(currentRank===null||!lastPlay||lastPlay.player===act.seat) throw new Error(L('现在不能抓','You can’t call right now'));
     const tp=lastPlay.player, cards=lastPlay.cards;
     const truth=cards.every(c=>fits(c,lastPlay.rank));
     const loser=truth?act.seat:tp, next=truth?tp:act.seat, pn=pile.length, gained=pile.slice();
@@ -670,7 +706,7 @@ function engineApply(act){
     ev.push({e:'reveal',by:act.seat,target:tp,cards:cards,rank:lastPlay.rank,
              truth:truth,loser:loser,next:next,picked:pn,gained:gained});
     currentRank=null;roundClaimed=0;passStreak=0;roundLeaderId=null;lastPlay=null;turn=next;
-  }else throw new Error('未知动作 '+act.t);
+  }else throw new Error(L('未知动作 ','Unknown action ')+act.t);
   // 赢家判定：手牌空、且那一手已经没人能翻
   const w=outQueue.find(i=>hands[i].length===0&&!(lastPlay&&lastPlay.player===i&&currentRank!==null));
   if(w!==undefined){ over=true; winner=w; ev.push({e:'win',seat:w}); }
@@ -684,7 +720,7 @@ function serializeGame(){
 }
 function loadGame(j){
   const g=typeof j==='string'?JSON.parse(j):j;
-  if(g.proto!==PROTO) throw new Error('存档版本不合：'+g.proto);
+  if(g.proto!==PROTO) throw new Error(L('存档版本不合：','Save version mismatch: ')+g.proto);
   ECFG=g.cfg;hands=g.hands;pile=g.pile;turn=g.turn;currentRank=g.currentRank;
   roundClaimed=g.roundClaimed;passStreak=g.passStreak;roundLeaderId=g.roundLeaderId;roundBy=g.roundBy||[0,0,0,0];
   lastPlay=g.lastPlay;outQueue=g.outQueue;over=g.over;winner=g.winner;
@@ -726,7 +762,9 @@ function say(t){logs.unshift(t);logs=logs.slice(0,3);}
 
 /* ═══ 渲染 ═══ */
 function cardInner(c){
-  if(isJoker(c)) return '<span class="idx"><b>王</b><i>'+(c===53?'大':'小')+'</i></span><span class="mid">王</span>';
+  if(isJoker(c)) return EN()
+    ? '<span class="idx"><b>JK</b><i>'+(c===53?'BIG':'SM')+'</i></span><span class="mid">★</span>'
+    : '<span class="idx"><b>王</b><i>'+(c===53?'大':'小')+'</i></span><span class="mid">王</span>';
   return '<span class="idx"><b>'+RANKS[rk(c)]+'</b><i>'+SUITS[st(c)]+'</i></span>'+
          '<span class="mid">'+SUITS[st(c)]+'</span>';
 }
@@ -740,17 +778,17 @@ function render(){
     const bub=B? (B.emo? '<div class="bub ebub'+(B.pop?' pop':'')+'">'+emoFace(B.emoKey,B.emo)+'</div>'
                        : '<div class="bub'+(B.pop?' pop':'')+'">'+esc(B.text)+'</div>') : '';
     const rg=rage[i]||0;
-    const mt = tilt[i]? '<div class="mtag mad">上头</div>'
-             : mood[i]==='glee'? '<div class="mtag glee">得意</div>'
-             : mood[i]==='oops'? '<div class="mtag oops">栽了</div>'
-             : rg>=3? '<div class="mtag r3">要炸</div>'
-             : rg===2? '<div class="mtag r2">上火</div>'
-             : rg===1? '<div class="mtag r1">憋气</div>'
-             : '<div class="mtag calm">淡定</div>';
+    const mt = tilt[i]? '<div class="mtag mad">'+L('上头','TILTED')+'</div>'
+             : mood[i]==='glee'? '<div class="mtag glee">'+L('得意','SMUG')+'</div>'
+             : mood[i]==='oops'? '<div class="mtag oops">'+L('栽了','BUSTED')+'</div>'
+             : rg>=3? '<div class="mtag r3">'+L('要炸','FUMING')+'</div>'
+             : rg===2? '<div class="mtag r2">'+L('上火','HEATED')+'</div>'
+             : rg===1? '<div class="mtag r1">'+L('憋气','MIFFED')+'</div>'
+             : '<div class="mtag calm">'+L('淡定','CALM')+'</div>';
     return '<div class="seat'+(turn===i?' active':'')+(n<=3?' low':'')+'">'+mt+
       '<div class="ava">'+avaSVG(i)+'</div>'+
-      '<div class="nm">'+NAMES[i]+'</div>'+
-      '<div class="ct">'+n+' 张</div>'+bub+'</div>';
+      '<div class="nm">'+esc(dn(NAMES[i]))+'</div>'+
+      '<div class="ct">'+L(n+' 张',n+(n===1?' card':' cards'))+'</div>'+bub+'</div>';
   }).join('');
 
   const h=hands[mySeat], n=h.length;
@@ -759,7 +797,7 @@ function render(){
   $('hand').innerHTML=h.map((c,i)=>
     '<div class="'+cls(c)+(selected.has(c)?' sel':'')+(fresh.has(c)?' fresh'+(justGot?' in':''):'')+
     '" data-c="'+c+'" tabindex="0" style="left:'+(i*step)+'px;z-index:'+i+'">'+cardInner(c)+'</div>').join('');
-  $('handct').textContent=n+' 张';
+  $('handct').textContent=L(n+' 张',n+(n===1?' card':' cards'));
   $('log').innerHTML=logs.map(t=>'<div>'+t+'</div>').join('');
   justGot=false;                    // 动画只播一次；金圈留着，等你出了下一手再清
   for(const k in BUBS) BUBS[k].pop=false;   // 弹出动画只播一次
@@ -810,10 +848,11 @@ function pileHTML(drop){
     const a=jj.a, x=jj.x, y=i*2+jj.y;
     h+='<div class="bk '+BACK+(i>=from?' drop':'')+'" style="transform:translate('+x+'px,'+y+'px) rotate('+a+'deg);z-index:'+i+'"></div>';
   }
-  return h+'<div class="pilect">'+pile.length+' 张</div></div>';
+  return h+'<div class="pilect">'+L(pile.length+' 张',pile.length+(pile.length===1?' card':' cards'))+'</div></div>';
 }
 const claimHTML=(p,cnt,rank)=>
-  '<div class="who">'+nm(p)+' 报</div><div class="plaque">'+CN[cnt]+' 个 <em>'+RANKS[rank]+'</em></div>';
+  EN() ? '<div class="who">'+poss(p)+' claim</div><div class="plaque">'+cnt+' × <em>'+RANKS[rank]+'</em></div>'
+       : '<div class="who">'+nm(p)+' 报</div><div class="plaque">'+CN[cnt]+' 个 <em>'+RANKS[rank]+'</em></div>';
 
 /* ═══ 人类回合 ═══ */
 function canCall(){ return currentRank!==null && lastPlay && lastPlay.player!==mySeat; }
@@ -821,7 +860,7 @@ function humanTurn(){
   return new Promise(res=>{
     humanResolve=res;
     if(currentRank===null){
-      stage('<div class="who">该你出牌</div><div class="plaque">你来定点数</div>');
+      stage('<div class="who">'+L('该你出牌','Your turn')+'</div><div class="plaque">'+L('你来定点数','You name the rank')+'</div>');
     }else{
       stage(claimHTML(lastPlay.player,lastPlay.cards.length,currentRank)+pileHTML());
     }
@@ -831,11 +870,11 @@ function humanTurn(){
 }
 function playControls(){
   $('controls').innerHTML=
-    '<button class="act danger wide" id="callBtn">说瞎话！</button>'+
+    '<button class="act danger wide" id="callBtn">'+L('说瞎话！','Liar!')+'</button>'+
     '<div class="row">'+
-      '<button class="act" id="clearBtn">取消</button>'+
-      '<button class="act" id="passBtn">过</button>'+
-      '<button class="act primary" id="playBtn">出牌</button>'+
+      '<button class="act" id="clearBtn">'+L('取消','Clear')+'</button>'+
+      '<button class="act" id="passBtn">'+L('过','Pass')+'</button>'+
+      '<button class="act primary" id="playBtn">'+L('出牌','Play')+'</button>'+
     '</div>';
   $('clearBtn').onclick=()=>{selected.clear();render();updateControls();};
   $('passBtn').onclick=()=>{if(!$('passBtn').disabled) commitAct('pass');};
@@ -850,13 +889,13 @@ function updateControls(){
   const n=selected.size, my=!!humanResolve;
   const pb=$('playBtn'); if(!pb) return;
   pb.disabled=!(my&&n>=1&&n<=ECFG.max);
-  pb.textContent=n?'出 '+n+' 张':'出牌';
+  pb.textContent=n?L('出 '+n+' 张','Play '+n):L('出牌','Play');
   $('clearBtn').disabled=!n;
   $('passBtn').disabled=!(my&&currentRank!==null);
   const cb=$('callBtn'), ok=my&&canCall();
   cb.disabled=!ok;
   cb.style.visibility=ok?'visible':'hidden';   // 隐身但占位：出现和消失都不挪版面
-  cb.textContent = ok? '说瞎话！抓 '+nm(lastPlay.player) : '说瞎话！';
+  cb.textContent = ok? L('说瞎话！抓 '+nm(lastPlay.player),'Liar! Call out '+nm(lastPlay.player)) : L('说瞎话！','Liar!');
 }
 $('hand').addEventListener('click',e=>{
   const el=e.target.closest('.card'); if(!el||!humanResolve) return;
@@ -870,8 +909,9 @@ function openRankPicker(){
   sel.forEach(c=>{if(!isJoker(c))mine[rk(c)]=1;});
   const wilds=ECFG.wild?sel.filter(isJoker).length:0;
   $('rankHint').textContent = wilds
-    ? '金色的是你选中的牌里真有的。你带了 '+wilds+' 张王，报什么都算真话。'
-    : '金色的是你选中的牌里真有的点数。';
+    ? L('金色的是你选中的牌里真有的。你带了 '+wilds+' 张王，报什么都算真话。',
+        'Gold = ranks you actually selected. You’ve got '+wilds+(wilds>1?' jokers':' joker')+' in there, so any rank is the truth.')
+    : L('金色的是你选中的牌里真有的点数。','Gold = ranks you actually selected.');
   $('rankGrid').innerHTML=RANKS.map((r,i)=>
     '<button data-r="'+i+'" class="'+(mine[i]?'has':'')+'">'+r+'</button>').join('');
   $('rankSheet').classList.add('on');
@@ -915,9 +955,17 @@ const MEM=(function(){
 function saveMem(){ try{ localStorage.setItem('sxh_mem',JSON.stringify(MEM)); }catch(e){} }
 function winsLine(){
   const w=MEM.winsBy||{};
-  return Object.keys(w).map(k=>(k==='你'?'真人玩家':k)+' '+w[k]).join('，')||'还没人赢过';
+  return Object.keys(w).map(k=>(k==='你'?L('真人玩家','Human player'):dn(k))+' '+w[k]).join(L('，',', '))||L('还没人赢过','nobody has won yet');
 }
 function memSummary(){
+  if(EN()){
+    if(!MEM.games) return 'This is the first time you’ve all sat down at the same table.';
+    const E=['You’ve played '+MEM.games+' games together: '+winsLine()+'. '];
+    if(MEM.lastWinner) E.push('The last game was won by '+(MEM.lastWinner==='你'?'the human player':dn(MEM.lastWinner))+'. ');
+    if(MEM.humanCaught+MEM.humanGoodCall+MEM.humanBadCall>0)
+      E.push('The human player’s record: caught bluffing '+MEM.humanCaught+' times, '+MEM.humanGoodCall+' right calls, '+MEM.humanBadCall+' wrong calls.');
+    return E.join('');
+  }
   if(!MEM.games) return '这是你们头一回坐一桌打牌。';
   const L=['你们一共打过 '+MEM.games+' 局：'+winsLine()+'。'];
   if(MEM.lastWinner) L.push('上一局是'+(MEM.lastWinner==='你'?'真人玩家':MEM.lastWinner)+'赢的。');
@@ -1112,6 +1160,150 @@ ROSTER.forEach(r=>{
   }
 });
 
+/* ═══ English：人设和词库（不是逐字翻译，按各人的性格重写的英文嘴） ═══ */
+const PERSONA_EN={
+ laoli:'You are Old Li, a man in his sixties from Tianjin. Honest to a fault — with good cards you just play them straight and you rarely bluff. But once someone catches you, you lose your temper and grumble and curse like a crusty old-timer. You talk in short, blunt bursts.',
+ wangjie:'You are Sis Wang, a woman in her fifties from Tianjin, a card-table veteran who loves to bluff and has the sharpest tongue at the table. Losing makes you hot-headed. You love teasing and roasting people.',
+ xiaozhao:'You are Young Zhao, a man in his thirties from Tianjin. Quiet, precise, always counting cards. You speak in short, cold fragments; even when angry you only spit out a word or two.',
+ tiezi:'You are Tiezi, a loud, hearty guy in his forties from China’s Northeast. You love all-in mega-bluffs and you call people out without a second thought; when you tilt, you roar. Big brash “bro” energy.',
+ chenjiaoshou:'You are Professor Chen, a retired professor from Suzhou. Refined, unhurried, bookish speech. You count cards meticulously, almost never bluff, and rarely miss a call. Even your insults are genteel — the harshest word you use is “preposterous.”',
+ yaomei:'You are Yaomei, a fiery young woman in her twenties from Sichuan. Fast mouth, fast hands, loves calling people out, and never admits defeat when she’s caught. Spicy and cheeky.',
+ fashu:'You are Uncle Fa, a shrewd Cantonese businessman in his fifties. Picking up the pile feels like losing money, so you pass whenever you can and play very safe — but you keep sharp accounts and call without mercy when it’s right. Sprinkle in Cantonese flavor (aiya, wah, lah).'
+};
+ROSTER.forEach(r=>{ r.personaEn=PERSONA_EN[r.key]||''; });
+const TALK_EN={
+ laoli:{
+  play:['Here you go','I’ll follow','Righto','Nice and steady','Solid','Same as always','No rush'],
+  bluff:['…yeah, one more','Call it what you like','Close enough','Eyes shut, here goes','Just take my word'],
+  pass:['I pass','Got nothing','Sitting this one out','After you','Not wading into that'],
+  call:['Don’t buy it','Quit kidding me','Flip it, let me see','Something smells off','Don’t con an old man','That’s fishy'],
+  caught:['Oh, hell','You got me','Well, that blew up','Rotten luck, I tell ya','Busted','Got careless','Tripped up'],
+  clear:['Told ya','Wronged an honest man','Believe me now?','See? Real','Old man doesn’t lie','Man of my word'],
+  win:['Knew it','Sure enough','Looked off from the start','Old ginger’s the hottest','Can’t fool these eyes','Gotcha'],
+  lose:['These old eyes','All for nothing','Ugh, ate that one','Misread it','Getting old','Bah'],
+  mock:['Heh, there it is','Sank yourself','Knew you were crooked','Who taught you that one?'],
+  gloat:['Grabby hands','That cost ya','Rest those eyes a bit'],
+  doubt:['That many? Fishy','Not sure I buy it','Smells like a bluff'],
+  tilt:['What kind of nonsense is this!','My head hurts','Lowdown rotten trick','Now my temper’s up','Don’t hold me back','Ridiculous!','Leave me be','Can’t play like this'],
+  threat:['He’s nearly out','Slow him down','Don’t let him get away','Heads up, people'],
+  last:['Two left','Almost there','Nearly done','One more breath'],
+  over:['All out!','I’m off then','Rematch tomorrow'],
+  salty:{tilt:['Damn it all','Go to hell','Pisses me off, damn it','What bastard cards','Crap hand','Makes my blood boil, dammit'],
+    caught:['Shit, busted','Damn, you got me','Hell, bad luck','Damn, careless'],
+    call:['Bull, I don’t buy it','Hell no — flip it','Bullshit, you are','Don’t you damn con me'],
+    clear:['Accusing your elder, huh?','Dammit, it was real'],win:['Knew you were full of it, punk','Busted, kid'],
+    lose:['Damn, wasted','Hell, misread it','Blind as a bat, dammit']}},
+ wangjie:{
+  play:['Here’s a big one','Watch this','Take it','Quit dawdling','Sis is up','Make way','Eyes on me'],
+  bluff:['Top it off!','Safe as houses','Scared yet?','Believe it or don’t','That’s my claim','Calling or not?','If Sis says so, it’s so'],
+  pass:['Not this round','Taking a breather','You lot play','Can’t be bothered','Boring round'],
+  call:['Oh, keep blowing!','Flip it','Not even blushing?','Sis’s eyes don’t lie','That hand stinks','Bad acting'],
+  caught:['Lucky guess','Fine, fine, you win','I was going easy on you','Well, well, kid','Off day for Sis','Fell for you'],
+  clear:['Speechless?','Go on, call me','Learned your lesson?','Remember that','Do I look like a liar?','Who’s sorry now?'],
+  win:['Knew you were bluffing','Caught ya','Like Sis couldn’t tell?','Trying to fool me with that?','Too green','This is my turf'],
+  lose:['Lucky you','Okay, you guessed right','Weird','Cursed today','Good one, kid','Misread it'],
+  mock:['Hahaha, busted!','Serves you right','My sides hurt','Lost your shirt'],
+  gloat:['Wrong call — enjoy the pile','Itchy fingers?','I’m dying here'],
+  doubt:['Bluffing’s free, huh?','Weird hand','Looks dicey to me'],
+  tilt:['You rascal!','Messing with me?','I’m not done with you','Sis is on you all day','How petty can you get','You’ll be the death of me','Don’t try to calm me','Sis is fired up','Can’t swallow this'],
+  threat:['They’re getting away!','Don’t let them finish','Watch that one','Stop them'],
+  last:['Only two left, darling','Watch closely','Sis is closing the net'],
+  over:['Done, going home','Sis wins first','Party’s over'],
+  salty:{tilt:['You little bastard!','Oh, you want more? Damn','Go to hell!','Stupid ass','Damn it all','Sis is pissed','Pack of bastards'],
+    caught:['Damn, you’re good','Fine, dammit','Shit, tripped up','Shit, Sis got burned'],
+    call:['Bullshit — flip it!','Full of crap','You’re faking, I know it','Your face gives you away'],
+    clear:['Who’s the idiot now?','Call me again, punk'],win:['Knew you were full of shit','Got you, punk','Bluff busted','Way too damn green'],
+    lose:['Damn, lucky you','Damn weird']}},
+ xiaozhao:{
+  play:['Mm','Follow','Go','Out'],bluff:['Mm','Follow'],pass:['Pass','Yield'],
+  call:['Count’s off','Impossible','You missed one','Doesn’t add up','Fake'],
+  caught:['Error','Miscounted','Mm.','Oversight'],clear:['Told you. Real','Mm'],
+  win:['Mm','Counted right','As expected','All tracked'],lose:['Noted','Hm?','Interesting'],
+  mock:['Numbers didn’t add up','Called it','Figures'],gloat:['Shouldn’t have called','Bad math','Pity'],
+  doubt:['Tight count','Shaky on paper','Might not fit'],
+  tilt:['Ugh','What','Fine. You win','Annoying','Quiet'],threat:['Two left','Block him','Stop him'],
+  last:['Two','One'],over:['Done','End'],
+  salty:{tilt:['Fuck','Damn','Damn weird','Fuck. Annoying'],caught:['Shit. Error','Damn. Missed one'],
+    call:['Bull. Count’s off','Bullshit','Bull'],win:['Idiot'],lose:['Fuck','Damn']}},
+ tiezi:{
+  play:['Let’s go!','Watch me','Here I come, bro','Just do it','Again!','Keep up, keep up'],
+  bluff:['All in!','Go big!','Scared of what?','That’s that','Brute force wins','Gamble with me','Dare ya'],
+  pass:['Skip one','Not this round','You guys go','Catching my breath','Let it blow over'],
+  call:['Got a problem?','Pretty sure you’re bluffing','Flip it!','That’s hot air','Getting cocky, huh?'],
+  caught:['Oh my god','I’m toast','Totally botched it','Ya got me','Train wreck!'],
+  clear:['Well? Real, right?','Look at you, big shot','Admit it!','Told ya, bro','How about that'],
+  win:['Figured you were bluffing','How’s that, bro?','Show-off','Spotted it','Easy','No escape'],
+  lose:['Dang, misread it','Fine, you got it','Again!','Dang, took a loss'],
+  mock:['Ha! Killing me','Toast, huh?','Show-off','Botched it, huh?'],
+  gloat:['Shot in the dark, huh?','Big loss there','Eyes not working?'],
+  doubt:['Bluffing, right?','I don’t buy it','Big noise there'],
+  tilt:['Now I’m mad','Don’t hold me back','I’ll crush you all','RAAAH!','Nobody escapes','Fired up!','Fight me, all of you'],
+  threat:['Somebody’s escaping','Block ’em!','Stop him, quick'],
+  last:['Two left!','Next stop, victory','One more push'],
+  over:['Done! Pack it up!','All done!','Drinks on me'],
+  salty:{tilt:['Fuck, I’m mad','Want a beating?','Goddammit','What the fuck is this','Pissed as hell'],
+    caught:['Fuck, I’m toast','Damn, busted','Shit, wrecked'],
+    call:['Bullshit, flip it','Flip it — you’re full of hot air'],
+    clear:['Well? Who’s the idiot now?'],win:['Caught your bullshit','Bluff busted, punk'],lose:['Fuck, misread it']}},
+ chenjiaoshou:{
+  play:['In my view, this','Naturally','Very well','Step by step','As planned'],
+  bluff:['Let us try','An expedient'],
+  pass:['Let us wait and see','No hurry','I defer','Stillness wins','No need to contend'],
+  call:['The numbers disagree','Frankly, doubtful','Deceiving us, are we?','Improbable','Most suspicious','I must disagree'],
+  caught:['A miscalculation','How embarrassing','Careless of me','One slip in a hundred','Mortifying'],
+  clear:['Truth speaks for itself','I never speak falsely','Do not slander me','Why so suspicious?','A clear conscience'],
+  win:['Just as I thought','As expected','Mathematics never lies','Logic prevails','Deduced long ago'],
+  lose:['I overthought it','My apologies','Misjudged','Must review that'],
+  mock:['Why bother?','As expected','The acting needs work'],
+  gloat:['Impulsive, were we?','Questionable judgment','Tuition well spent'],
+  doubt:['Questionable numbers','Rather a bold claim','I shall reserve judgment'],
+  tilt:['Preposterous','Most unseemly','Dignity in ruins!'],
+  threat:['Colleagues, this one nears victory','We ought to intervene'],
+  last:['Two remain','The end approaches'],over:['You flatter me','Delightful'],
+  salty:{tilt:['Preposterous! Utterly preposterous!','Outrageous','Absurd beyond words!'],
+    call:['Utter nonsense — reveal it','Balderdash. Flip it!'],win:['Amateur hour'],lose:['So be it']}},
+ yaomei:{
+  play:['Sure thing','Watch it','Catch','Quick, quick','Take that','Come on'],
+  bluff:['Fooling ya','Steady','Scared of what?','Bluff it is','Keep up'],
+  pass:['Not this one','Quick break','You guys play','Skipping'],
+  call:['What are you bluffing for?','Nonsense, flip it','Who you fooling?','Flip it, go on','Can’t fool Yaomei','Your eyes are shifty'],
+  caught:['Uh-oh','You got me?','Okay, you’re good','Oops, busted'],
+  clear:['Ha! It’s real','You wronged me!','Told you, no tricks','Your pile now','Mad yet?'],
+  win:['Can’t fool me','Knew you were bluffing','Sharp eyes, me','Saw right through you'],
+  lose:['Huh, real?','Sneaky you','Fierce','Respect'],
+  mock:['Hahaha, oops!','Told ya not to bluff','Instant karma','Comfy now?'],
+  gloat:['Unlucky!','Slow those hands','Wrong call, haha'],
+  doubt:['Big talk','I’m not buying it','Dicey'],
+  tilt:['Now I’m mad','You little turtle!','I’ll fight you','Bring it','Not scared of you'],
+  threat:['They’re escaping!','Block, block!'],
+  last:['Just two left','Sweet','About to win'],
+  over:['Done playing!','Sweet as!','Perfect'],
+  salty:{tilt:['You turtle bastard!','Bullshit!','What the hell!','Now I’m pissed'],
+    caught:['Shit, busted','Dammit, caught'],call:['Bullshit, flip it','Bluffing your ass off'],
+    clear:['Who’s dumb now?','Told you to call'],win:['Bluff busted, huh?','Can’t run, turtle'],lose:['Damn, you’re good']}},
+ fashu:{
+  play:['Steady','Like so','Thanks ah','To plan','Shipping the order','Nice and steady'],
+  bluff:['One gamble','Small bet, small fun','Take a punt'],
+  pass:['Not now','Wait first','You guys go','No hurry, no hurry','Save my breath'],
+  call:['Are you kidding me?','Numbers don’t add up wor','Who are you fooling?','Books don’t balance','Can’t fool me','Saw through you lah'],
+  caught:['Aiya','Lost money','You caught me','Bad move, bad move','Took a loss'],
+  clear:['When have I ever cheated?','Wronged an honest man','Look carefully first lah','Real gold fears no fire','Clean as can be'],
+  win:['Saw through you from the start','Can’t hold it, huh?','Prosperity!','Too smart for you','All calculated'],
+  lose:['Lost one round','Call it tuition','Fair is fair'],
+  mock:['Haha, unlucky lah','Too many to fit','Serves you right','Knew it'],
+  gloat:['Lost your capital','Too hasty, wah','Misread the market'],
+  doubt:['Such big talk','Not so sure wor','Bit fishy'],
+  tilt:['Wah, infuriating','Stop messing around','Give me a break','Making me mad!','I’m done being patient'],
+  threat:['He’s about to win','Stop him quick'],
+  last:['Two more','Almost closing shop','Nearly time to pay up'],
+  over:['Done — count the money','Check, please!'],
+  salty:{tilt:['Damn you!','Loser!','Damn, so mad','Shit, really','So damn annoying'],
+    caught:['Damn, you caught me','Shit, big loss'],call:['Bullshit, flip it','What crap are you blowing?','Bull — flip it'],
+    win:['Got you, loser'],lose:['Damn, misjudged you']}}
+};
+// 给大模型看的人称：AI 用名字，真人叫"the human player"
+const whoE=i=>isAI(i)?dn(NAMES[i]):'the human player'+(i===mySeat?'':' '+dn(NAMES[i]));
+
 let NAMES=['你','老李','王姐','小赵'], AVA=['',AVATARS.laoli,AVATARS.wangjie,AVATARS.xiaozhao];
 const PROFILE={}, PERSONA={};
 let PREF_CAST=(()=>{ try{ const v=JSON.parse(localStorage.getItem('sxh_cast')||'[]');
@@ -1226,7 +1418,20 @@ function aiBanter(p,evText){
   const ctl=new AbortController();
   const timer=setTimeout(()=>ctl.abort(),5000);
   const hist=logs.slice(0,3).reverse().map(x=>String(x).replace(/<[^>]*>/g,''))
-                 .map(t=>t.replace(/^你 /,'真人玩家 ').replace(/ 你 /g,' 真人玩家 '));
+                 .map(t=>EN()? t.replace(/^You /,'The human player ').replace(/ you /g,' the human player ')
+                             : t.replace(/^你 /,'真人玩家 ').replace(/ 你 /g,' 真人玩家 '));
+  const r=rage[p]||0, perEn=PERSONA[p]?((ROSTER.find(x=>x.key===CASTKEY[p])||{}).personaEn||''):'';
+  const msgs = EN() ? [
+        {role:'system',content:perEn+' Keep your own voice and flavor. '+
+          (SET.salty&&r>=3
+            ? 'You’ve eaten '+r+' piles in a row and you’re furious: swear with real bite — fuck, damn, shit, bastard, dumbass, whatever fits, the way people blow up at a card table. Curse the cards, the game, your luck; never insult anyone’s family and never use slurs.'
+            : SET.salty&&r===2
+            ? 'You’ve eaten two piles in a row and you’re getting irritated: mild swearing is fine (damn, hell), nothing heavy.'
+            : 'Stay calm, no swearing.')+
+          ' You are playing the card game Liar (a.k.a. Cheat / BS). Say ONE line in English reacting to what just happened — at most 12 words, like something blurted out at a card table. You may bring up old history (given below). Output JSON only: {"talk":"..."}'},
+        {role:'user',content:'[History] '+memSummary()+'\n[Last few plays] '+(hist.join('; ')||'game just started')+
+          '\n[Just happened] '+evText+'\nYou ('+dn(NAMES[p])+') say:'}
+      ] : null;
   fetch(ENDPOINT,{method:'POST',signal:ctl.signal,
     headers:{'Content-Type':'application/json','Authorization':'Bearer '+KEY},
     body:JSON.stringify({
@@ -1234,7 +1439,7 @@ function aiBanter(p,evText){
       thinking:{type:'disabled'},
       response_format:{type:'json_object'},
       max_tokens:60, temperature:1.2,
-      messages:[
+      messages:msgs||[
         {role:'system',content:PERSONA[p]+' 说话保持你自己的方言味儿。'+
           (SET.salty&&(rage[p]||0)>=3
             ? '你已经连背 '+rage[p]+' 堆牌，正急眼：骂街要够味儿——操、他妈的、妈了个巴子、王八羔子、孙子、傻逼玩意儿，随便用，就是牌桌上急眼的劲儿。骂牌骂局骂手气都行，别碰人家里人、别用歧视性字眼。'
@@ -1253,7 +1458,7 @@ function aiBanter(p,evText){
       if(typeof t==='string'&&t.trim()) speak2(p,t.trim());
     })
     .catch(e=>{
-      if(!aiWarned){ aiWarned=true; say('DeepSeek 没接上，先用写好的词'); render(); }
+      if(!aiWarned){ aiWarned=true; say(L('DeepSeek 没接上，先用写好的词','DeepSeek didn’t connect — using scripted lines')); render(); }
     })
     .finally(()=>clearTimeout(timer));
 }
@@ -1380,20 +1585,34 @@ function chat(p,kind,rate){
   if(NET&&!NET.host) return;                 // 台词由房主统一广播，客机只负责演
   const P=PROFILE[p];
   if(Math.random() > (rate===undefined?P.chatty:rate)) return;
-  let pool=P.talk[kind]||[];
-  const S=P.talk.salty;
+  const TK=talkOf(p);
+  let pool=TK[kind]||[], sal=0;
+  const S=TK.salty;
   if(SET.salty&&S&&S[kind]&&S[kind].length){
     // 火气越大嘴越脏：没背过牌堆基本干净，背两三堆之后满嘴跑火车；手牌攒多了也焦躁
     const heat=Math.min(.85,Math.max(0,(rage[p]||0)-1)*.35+Math.max(0,hands[p].length-((ECFG.per||13)+1))*.04);   // 背第一堆忍着，第二堆起才上脏口
-    pool = Math.random()<heat ? S[kind] : pool;
+    if(Math.random()<heat){ pool=S[kind]; sal=1; }
   }
   const line=pick(pool); if(!line) return;
-  speak2(p,line);
+  speak2(p,line,{kind:kind,sal:sal});
 }
-function speak2(p,line){
-  const text=String(line).slice(0,60);   // 只弹气泡，不占日志；60 字封顶，长了竖着排
-  bubSet(p,{text:text,pop:true}, Math.min(9000, 3000+text.length*130));  // 字多多挂会儿，看得完
-  if(NET&&NET.host&&NET.started) netAll({t:'talk',seat:p,text:text});
+// 这人的词库：英文界面用英文词库（按人物 key 找），找不到就用原来的
+function talkOf(p){
+  const P=PROFILE[p]||{};
+  return (EN()&&TALK_EN[CASTKEY[p]]) || P.talk || {};
+}
+function speak2(p,line,meta){
+  const text=String(line).slice(0,EN()?90:60);   // 只弹气泡，不占日志；60 字封顶（英文 90 个字母），长了竖着排
+  bubSet(p,{text:text,pop:true}, Math.min(9000, 3000+text.length*(EN()?60:130)));  // 字多多挂会儿，看得完
+  if(NET&&NET.host&&NET.started) netAll({t:'talk',seat:p,text:text,kind:meta&&meta.kind,sal:meta&&meta.sal,lang:SET.lang});
+}
+// 联机时房主和客机语言不同：写好的词按同一类别在本机语言里重抽一句（大模型现编的、真人喊的原样显示）
+function relocalTalk(m){
+  if(!m.kind||m.lang===undefined||m.lang===SET.lang||SEATK[m.seat]!=='ai') return null;
+  const TK = EN()? TALK_EN[CASTKEY[m.seat]] : (PROFILE[m.seat]&&PROFILE[m.seat].talk);
+  if(!TK) return null;
+  const pool = (m.sal&&TK.salty&&TK.salty[m.kind]) || TK[m.kind];
+  return pick(pool)||null;
 }
 
 function aiChallenge(p,P,hot){
@@ -1462,7 +1681,8 @@ function presentPlayed(ev){
   const cs=(lastPlay&&lastPlay.player===p&&lastPlay.cards&&lastPlay.cards.length===ev.n)?lastPlay.cards:null;   // 主机有牌面；客机只有张数
   piled[p].push(...(cs||Array(ev.n).fill(-1)));
   for(let s=0;s<4;s++) for(const r in mem[s][p]) mem[s][p][r]=Math.max(0,mem[s][p][r]-ev.n);
-  say(nm(p)+' 报 '+ev.n+' 个 '+RANKS[ev.rank]+(ev.out?' —— 手牌出完了！':''));
+  say(L(nm(p)+' 报 '+ev.n+' 个 '+RANKS[ev.rank]+(ev.out?' —— 手牌出完了！':''),
+        nm(p)+' claimed '+ev.n+' × '+RANKS[ev.rank]+(ev.out?' — and '+vb(p,'you’re','is')+' out of cards!':'')));
   if(ev.n>=3&&!ev.out&&Math.random()<.15){
     const dl=[0,1,2,3].filter(i=>isAI(i)&&i!==p);
     if(dl.length){ const g=dl[Math.random()*dl.length|0], myE=banterEpoch;
@@ -1476,9 +1696,9 @@ function presentPlayed(ev){
 async function presentReveal(ev){
   const p=ev.target, q=ev.by, cards=ev.cards, truth=ev.truth;
   if(tilt[q]) tilt[q]--;
-  say(nm(q)+' 喊了说瞎话');
+  say(L(nm(q)+' 喊了说瞎话',nm(q)+' called “Liar!”'));
   Sfx.call();
-  stage('<div class="who">'+nm(q)+' 喊：说瞎话！</div>'+
+  stage('<div class="who">'+L(nm(q)+' 喊：说瞎话！',nm(q)+': “Liar!”')+'</div>'+
         '<div class="reveal">'+cards.map(faceUp).join('')+'</div>');
   Sfx.flip();
   render(); await sleep(1000*PACEF());
@@ -1487,10 +1707,13 @@ async function presentReveal(ev){
   if(q===mySeat){ if(truth) MEM.humanBadCall++; else MEM.humanGoodCall++; }
   saveMem();
   if(isAI(p)){ chat(p, truth?'clear':'caught', .85);   // 被抓的人先反应
-    aiBanter(p, '你报 '+cards.length+' 个 '+RANKS[ev.rank]+'，被 '+
+    aiBanter(p, EN()
+      ? 'You claimed '+cards.length+' × '+RANKS[ev.rank]+' and '+whoE(q)+' called “Liar!” and flipped them — '+
+        (truth?'you were telling the truth; they accused you wrongly and they eat the pile':'you really were bluffing, caught red-handed, and you take the whole pile')
+      : '你报 '+cards.length+' 个 '+RANKS[ev.rank]+'，被 '+
       (isAI(q)?NAMES[q]:'真人玩家'+(q===mySeat?'':NAMES[q]))+' 喊说瞎话翻开了 —— '+
       (truth?'你说的是真话，他冤枉你，这堆牌归他背':'你真在吹，让他逮个正着，你把整桌牌收走')); }
-  stampOn(truth?'真话':'瞎话');       // 只盖章，牌不重翻
+  stampOn(truth?L('真话','TRUE'):L('瞎话','LIE'));       // 只盖章，牌不重翻
   await sleep(1300*PACEF());
 
   const loser=ev.loser, next=ev.next, pn=ev.picked;
@@ -1504,22 +1727,30 @@ async function presentReveal(ev){
   rage[loser]=(rage[loser]||0)+1;                       // 背一次牌堆，火气 +1
   if(truth&&isAI(q)) coolCall[q]=2;                     // 抓错了：接下来两轮冷静，别连环送
   if(isAI(loser)&&PROFILE[loser]&&PROFILE[loser].tiltable) tilt[loser]=PROFILE[loser].tiltable;  // 谁收了牌谁上头
-  say(truth ? nm(p)+' 说的是真话 — '+nm(loser)+' 收走 '+pn+' 张'
+  if(EN()) say(truth ? nm(p)+' told the truth — '+nmi(loser)+' picked up '+pn
+                    : nm(p)+' '+vb(p,'were','was')+' lying — picked up '+pn);
+  else say(truth ? nm(p)+' 说的是真话 — '+nm(loser)+' 收走 '+pn+' 张'
             : nm(p)+' 真在骗人 — 收走 '+pn+' 张');
-  stage('<div class="who">'+nm(loser)+' 收走了 '+pn+' 张</div>'+
-        '<div class="plaque">'+nm(next)+' 接着出</div>');
+  stage('<div class="who">'+L(nm(loser)+' 收走了 '+pn+' 张',nm(loser)+' picked up '+pn)+'</div>'+
+        '<div class="plaque">'+L(nm(next)+' 接着出',next===mySeat?'Your lead':nm(next)+' leads')+'</div>');
   const gawk=[0,1,2,3].filter(i=>isAI(i)&&i!==p&&i!==q);   // 看戏的也有话说
   if(gawk.length&&Math.random()<.55){
     const g=gawk[Math.random()*gawk.length|0], myE=banterEpoch, kind=truth?'gloat':'mock';
     setTimeout(()=>{ if(myE===banterEpoch&&!over){
       chat(g,kind,.9);
-      aiBanter(g,'你没掺和这场翻牌，纯看戏：'+(truth
+      aiBanter(g, EN()
+        ? 'You weren’t part of this reveal, just watching: '+(truth
+          ? whoE(q)+' called “Liar!” on '+whoE(p)+' but it was true, so '+whoE(q)+' ate '+pn+' cards'
+          : whoE(p)+' got caught lying by '+whoE(q)+' and took the whole pile')+' — take a jab or gloat.'
+        : '你没掺和这场翻牌，纯看戏：'+(truth
         ? nm(q)+' 喊说瞎话抓 '+nm(p)+'，结果人家是真的，'+nm(q)+' 白背了 '+pn+' 张牌'
         : nm(p)+' 说瞎话被 '+nm(q)+' 当场翻开，收走了整桌牌')+' —— 损一句或者幸灾乐祸一句');
     }},1000+Math.random()*800);
   }
   if(isAI(q)){ chat(q, truth?'lose':'win', .70);       // 抓的人再回一句
-    aiBanter(q, '你抓 '+(isAI(p)?NAMES[p]:'真人玩家'+(p===mySeat?'':NAMES[p]))+'，翻开 —— '+
+    aiBanter(q, EN()
+      ? 'You called “Liar!” on '+whoE(p)+' and flipped — '+(truth?'wrong call, it was real, all '+pn+' cards are yours now':'right call, they were bluffing and took '+pn+' cards')
+      : '你抓 '+(isAI(p)?NAMES[p]:'真人玩家'+(p===mySeat?'':NAMES[p]))+'，翻开 —— '+
       (truth?'抓错了，人家是真的，'+pn+' 张牌全归你背':'抓对了，他在吹，他收走 '+pn+' 张')); }
   render(); await sleep(1000*PACEF());
 }
@@ -1527,13 +1758,15 @@ async function presentBurn(ev){
   Sfx.burn();
   if(ev.eaten) pileGoesTo(ev.leader); else piled=[[],[],[],[]];
   if(!ev.eaten){
-    say('三家都过 — 桌上 '+ev.n+' 张作废，'+nm(ev.leader)+' 开新一轮');
-    stage('<div class="who">三家都过</div><div class="plaque">'+ev.n+' 张作废</div>'+
-          '<div class="note">由 '+nm(ev.leader)+' 开新一轮</div>');
+    say(L('三家都过 — 桌上 '+ev.n+' 张作废，'+nm(ev.leader)+' 开新一轮',
+          'All three passed — '+ev.n+(ev.n===1?' card':' cards')+' discarded, '+nmi(ev.leader)+' '+vb(ev.leader,'start','starts')+' a new round'));
+    stage('<div class="who">'+L('三家都过','All three passed')+'</div><div class="plaque">'+L(ev.n+' 张作废',ev.n+' discarded')+'</div>'+
+          '<div class="note">'+L('由 '+nm(ev.leader)+' 开新一轮','New round: '+nmi(ev.leader)+' to lead')+'</div>');
   }else{
     if(ev.leader===mySeat&&ev.gained.length){ fresh=new Set(ev.gained); justGot=true; }
-    say('三家都过 — '+nm(ev.leader)+' 收走 '+ev.n+' 张，开新一轮');
-    stage('<div class="who">三家都过</div><div class="plaque">'+nm(ev.leader)+' 收走 '+ev.n+' 张</div>');
+    say(L('三家都过 — '+nm(ev.leader)+' 收走 '+ev.n+' 张，开新一轮',
+          'All three passed — '+nmi(ev.leader)+' picked up '+ev.n+', new round'));
+    stage('<div class="who">'+L('三家都过','All three passed')+'</div><div class="plaque">'+L(nm(ev.leader)+' 收走 '+ev.n+' 张',nm(ev.leader)+' +'+ev.n)+'</div>');
   }
   render(); await sleep(1200*PACEF());
 }
@@ -1547,7 +1780,7 @@ function loadPeerLib(){
                 'https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js'];
     let i=0;
     (function next(){
-      if(i>=urls.length) return rej(new Error('联机组件加载不了，检查网络'));
+      if(i>=urls.length) return rej(new Error(L('联机组件加载不了，检查网络','Couldn’t load the online module — check your connection')));
       const sc=document.createElement('script');
       sc.src=urls[i++]; sc.onload=()=>res(); sc.onerror=next;
       document.head.appendChild(sc);
@@ -1572,7 +1805,9 @@ const PROXY_PROF=(()=>null)();   // 掉线代打用的牌风，开局后填
 
 // 表情贴纸：用你自己头像的脸。没挑人物脸的用文字兜底
 const EMOKEYS=['laugh','mad','shock','smug','oops','bored'];
-const EMOTXT={laugh:'哈哈哈哈',mad:'上火了',shock:'我的天',smug:'嘚瑟一下',oops:'完了完了',bored:'快点儿啊'};
+const EMOTXT_ZH={laugh:'哈哈哈哈',mad:'上火了',shock:'我的天',smug:'嘚瑟一下',oops:'完了完了',bored:'快点儿啊'};
+const EMOTXT_EN={laugh:'Hahaha',mad:'So mad',shock:'OMG',smug:'Too easy',oops:'Uh-oh',bored:'Hurry up'};
+const emoTxt=k=>(EN()?EMOTXT_EN:EMOTXT_ZH)[k];
 let lastEmoteAt=0;
 function emoFace(key,emo){       // 某人物做某表情的整张脸
   const A=AVATARS[key]; if(!A) return '';
@@ -1581,8 +1816,8 @@ function emoFace(key,emo){       // 某人物做某表情的整张脸
 function dsChatOn(){ return (NET&&!NET.host) ? !!NET.dsOn : !!(SET.ai&&KEY); }
 function paintEbar(){
   if(dsChatOn()){                              // 接上 DeepSeek：真对话框，AI 会接茬
-    $('ebar').innerHTML='<input id="chatIn" maxlength="30" placeholder="冲牌桌喊一句，他们会接茬…">'+
-      '<button class="go" id="chatGo">喊</button>';
+    $('ebar').innerHTML='<input id="chatIn" maxlength="30" placeholder="'+L('冲牌桌喊一句，他们会接茬…','Say something to the table — they’ll answer…')+'">'+
+      '<button class="go" id="chatGo">'+L('喊','Say')+'</button>';
     $('chatGo').onclick=sendChat;
     $('chatIn').onkeydown=e=>{ if(e.key==='Enter') sendChat(); };
     setTimeout(()=>{ const i=$('chatIn'); if(i&&$('ebar').classList.contains('on')) i.focus(); },80);
@@ -1590,7 +1825,7 @@ function paintEbar(){
   }
   $('ebar').innerHTML = myAvaKey
     ? EMOKEYS.map(k=>'<button class="emo" data-k="'+k+'">'+emoFace(myAvaKey,k)+'</button>').join('')
-    : EMOKEYS.map(k=>'<button data-k="'+k+'">'+EMOTXT[k]+'</button>').join('');
+    : EMOKEYS.map(k=>'<button data-k="'+k+'">'+emoTxt(k)+'</button>').join('');
 }
 function sendChat(){
   const el=$('chatIn'); if(!el) return;
@@ -1607,16 +1842,18 @@ function humanChat(seat,t){                    // 主机侧：上泡、广播、
   const others=[0,1,2,3].filter(isAI);
   if(!others.length) return;
   const g=others[Math.random()*others.length|0], myE=banterEpoch;
-  setTimeout(()=>{ if(myE===banterEpoch&&!over) aiBanter(g,'真人玩家 '+NAMES[seat]+' 冲全桌喊了句：「'+t+'」——你接他的话茬回一句'); },600+Math.random()*700);
+  setTimeout(()=>{ if(myE===banterEpoch&&!over) aiBanter(g,L('真人玩家 '+NAMES[seat]+' 冲全桌喊了句：「'+t+'」——你接他的话茬回一句',
+      'The human player '+dn(NAMES[seat])+' shouted to the table: “'+t+'” — answer what they said.')); },600+Math.random()*700);
   if(others.length>1&&Math.random()<.35){
     const rest=others.filter(x=>x!==g), g2=rest[Math.random()*rest.length|0];
-    setTimeout(()=>{ if(myE===banterEpoch&&!over) aiBanter(g2,'刚才 '+NAMES[seat]+' 冲牌桌喊：「'+t+'」，'+NAMES[g]+' 已经回过他了。你在旁边看戏，顺嘴再补一句'); },3000+Math.random()*1500);
+    setTimeout(()=>{ if(myE===banterEpoch&&!over) aiBanter(g2,L('刚才 '+NAMES[seat]+' 冲牌桌喊：「'+t+'」，'+NAMES[g]+' 已经回过他了。你在旁边看戏，顺嘴再补一句',
+      'Just now '+dn(NAMES[seat])+' shouted to the table: “'+t+'” and '+dn(NAMES[g])+' already answered. You’re watching from the side — chime in with one more line.')); },3000+Math.random()*1500);
   }
 }
 function selfToast(t,avaKey,emo){
   const el=$('etoast');
-  el.innerHTML = avaKey? '<span class="tface">'+emoFace(avaKey,emo)+'</span>已发出'
-                       : '你：「'+esc(t)+'」';
+  el.innerHTML = avaKey? '<span class="tface">'+emoFace(avaKey,emo)+'</span>'+L('已发出','Sent')
+                       : L('你：「'+esc(t)+'」','You: “'+esc(t)+'”');
   el.classList.add('on');
   clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('on'),1600);
 }
@@ -1633,7 +1870,7 @@ function sendEmote(k){
     else if(NET&&NET.conn){ try{NET.conn.send({t:'emo',emo:k});}catch(e){} }
     selfToast('',myAvaKey,k);
   }else{
-    const t=EMOTXT[k];
+    const t=emoTxt(k);
     if(NET&&NET.host) speak2(mySeat,t);
     else if(NET&&NET.conn){ try{NET.conn.send({t:'emote',txt:t});}catch(e){} }
     selfToast(t);
@@ -1654,7 +1891,7 @@ async function hostRoom(wait){
   await loadPeerLib();
   const peer=new Peer(ROOMPFX+FIXROOM,peerOpts());
   NET={host:true,peer:peer,conns:[],started:false,waitRemote:null,waitSeat:-1,wait:wait||0};
-  netStatus(wait?'房间还被上一局占着，排队等它腾出来…（已等 '+wait*4+' 秒）':'正在开房…');
+  netStatus(wait?L('房间还被上一局占着，排队等它腾出来…（已等 '+wait*4+' 秒）','The table is still held by a previous game — waiting for it to free up… ('+wait*4+'s)'):L('正在开房…','Opening the table…'));
   peer.on('open',()=>{ netStatus(''); paintLobby(); });
   peer.on('error',e=>{
     if(!NET||NET.peer!==peer) return;
@@ -1662,11 +1899,11 @@ async function hostRoom(wait){
       // 旧页面攥着房间没放：信令服务器最长约一分钟自动收回。排队重试，不用人管
       try{peer.destroy();}catch(_){}
       const w=NET.wait+1, myNET=NET;
-      if(w>22){ netFail('房间一直被占着——把开过房的旧页面全关掉，再回来点开房'); return; }
+      if(w>22){ netFail(L('房间一直被占着——把开过房的旧页面全关掉，再回来点开房','The table is still taken — close any old pages that hosted, then tap Host again')); return; }
       myNET._t=setTimeout(()=>{ if(NET===myNET&&NET.host) hostRoom(w); },4000);
-      netStatus('房间还被上一局占着，排队等它腾出来…（已等 '+w*4+' 秒）');
+      netStatus(L('房间还被上一局占着，排队等它腾出来…（已等 '+w*4+' 秒）','The table is still held by a previous game — waiting for it to free up… ('+w*4+'s)'));
     }
-    else netFail(e.type==='network'?'连不上联机服务器':'联机出错：'+e.type);
+    else netFail(e.type==='network'?L('连不上联机服务器','Can’t reach the online server'):L('联机出错：','Online error: ')+e.type);
   });
   peer.on('connection',conn=>{
     conn.on('data',m=>hostMsg(conn,m));
@@ -1687,7 +1924,7 @@ function hostMsg(conn,m){
     if(NET.started||NET.conns.length>=3){ conn.send({t:'full'}); return; }
     if(m.v!==VERSION){ conn.send({t:'badver',v:VERSION}); return; }
     conn.seat=NET.conns.length+1;
-    conn.pname=String(m.name||'玩家').replace(/[<>&"]/g,'').slice(0,8)||'玩家';
+    conn.pname=String(m.name||'玩家').replace(/[<>&"]/g,'').slice(0,8)||'玩家';   // 默认名存中文，显示时 dn() 换
     conn.avaKey=AVATARS[m.ava]?m.ava:'';
     conn.tk=Math.random().toString(36).slice(2,10);        // 座位令牌：断线重连凭它认人
     NET.tks=NET.tks||{}; NET.tks[conn.tk]={seat:conn.seat,name:conn.pname,ava:conn.avaKey};
@@ -1711,13 +1948,13 @@ function hostMsg(conn,m){
     conn.seat=seat; conn.pname=rec.name; conn.avaKey=rec.ava; conn.tk=m.tk;
     NET.conns.push(conn);
     SEATK[seat]='remote'; delete PROFILE[seat]; delete PERSONA[seat];   // AI 代打交回真人
-    say('✓ '+NAMES[seat]+' 重连回来了'); render();
+    say(L('✓ '+NAMES[seat]+' 重连回来了','✓ '+dn(NAMES[seat])+' reconnected')); render();
     const env=envelope();                                   // 先发全量现状让他重建牌桌，再广播
     const avaKeys=[0,1,2,3].map(i=>SEATK[i]==='ai'?CASTKEY[i]:(HUMAN_AVAKEYS[i]||''));
     try{conn.send({t:'start',v:VERSION,seat:seat,names:NAMES.slice(),seatk:SEATK.slice(),
       castKeys:CASTKEY,avaKeys:avaKeys,ecfg:ECFG,hand:hands[seat],env:env,
       back:BACKS.indexOf(BACK),ds:!!(SET.ai&&KEY)});}catch(e){}
-    netAll({t:'talk',seat:seat,text:'我回来了'});
+    netAll({t:'talk',seat:seat,text:L('我回来了','I’m back')});
   }else if(m.t==='chat'&&NET.started){
     const now=Date.now(), t=String(m.txt||'').slice(0,30);
     if(t&&(!conn._lastEmote||now-conn._lastEmote>2500)){ conn._lastEmote=now; humanChat(conn.seat,t); }
@@ -1748,7 +1985,7 @@ function hostDrop(conn){
     SEATK[st]='ai';
     PROFILE[st]=JSON.parse(JSON.stringify(ROSTER[0].prof)); PROFILE[st].chatty=0;
     PERSONA[st]='';
-    say('⚠ '+NAMES[st]+' 掉线了，AI 代打'); render();
+    say(L('⚠ '+NAMES[st]+' 掉线了，AI 代打','⚠ '+dn(NAMES[st])+' dropped — AI is filling in')); render();
     netAll({t:'talkless',seat:st,name:NAMES[st]});
     if(NET.waitRemote&&NET.waitSeat===st){ const r=NET.waitRemote; NET.waitRemote=null;
       takeTurn(st).then(r); }
@@ -1798,7 +2035,7 @@ function waitRemote(seat){
     NET.timer=setTimeout(()=>{
       if(NET&&NET.waitRemote&&NET.waitSeat===seat){
         const r=NET.waitRemote; NET.waitRemote=null;
-        say(NAMES[seat]+' 想太久，这一手 AI 代出'); render();
+        say(L(NAMES[seat]+' 想太久，这一手 AI 代出',dn(NAMES[seat])+' took too long — AI played this one')); render();
         const bak=PROFILE[seat];
         PROFILE[seat]=PROFILE[seat]||JSON.parse(JSON.stringify(ROSTER[0].prof));
         takeTurn(seat).then(a=>{ if(bak===undefined) delete PROFILE[seat]; r(a); });
@@ -1809,26 +2046,26 @@ function waitRemote(seat){
 
 /* ── 客机 ── */
 async function joinRoom(name){
-  if(NET&&!NET.host&&NET.joined){ netStatus('已经在房里了，等房主开局…'); return; }   // 手快连点，不重复进
+  if(NET&&!NET.host&&NET.joined){ netStatus(L('已经在房里了，等房主开局…','Already at the table — waiting for the host to start…')); return; }   // 手快连点，不重复进
   if(NET){ try{NET.peer.destroy();}catch(_){} NET=null; }   // 重进前先掐掉旧连接，房主那边旧座自动清
   await loadPeerLib();
   const peer=new Peer(peerOpts());
   NET={host:false,peer:peer,q:Promise.resolve(),pendCards:null,started:false,joined:false};
-  netStatus('正在连接…');
-  const onMsg=m=>{ NET.q=NET.q.then(()=>clientMsg(m)).catch(e=>{console.error(e); say('⚠ 出错：'+e.message); render(); clientAfter();}); };
+  netStatus(L('正在连接…','Connecting…'));
+  const onMsg=m=>{ NET.q=NET.q.then(()=>clientMsg(m)).catch(e=>{console.error(e); say(L('⚠ 出错：','⚠ Error: ')+e.message); render(); clientAfter();}); };
   peer.on('error',e=>{
     if(!NET||NET.peer!==peer) return;   // 旧连接的余响，不理
-    if(e.type==='peer-unavailable') netFail('房主还没开房——让房主先点「联机 · 开房」，再点一次加入');
-    else netFail(e.type==='network'?'连不上联机服务器':'联机出错：'+e.type);
+    if(e.type==='peer-unavailable') netFail(L('房主还没开房——让房主先点「联机 · 开房」，再点一次加入','The host hasn’t opened a table yet — have them tap “Online · Host”, then tap Join again'));
+    else netFail(e.type==='network'?L('连不上联机服务器','Can’t reach the online server'):L('联机出错：','Online error: ')+e.type);
   });
   peer.on('open',()=>{
     if(!NET||NET.peer!==peer) return;
     const conn=peer.connect(ROOMPFX+FIXROOM,{reliable:true});
     NET.conn=conn;
-    const hint=setTimeout(()=>{ if(NET&&NET.peer===peer&&!NET.joined) netStatus('半天没动静——房主那边可能是残留的旧页面，让房主重开一次房'); },12000);
+    const hint=setTimeout(()=>{ if(NET&&NET.peer===peer&&!NET.joined) netStatus(L('半天没动静——房主那边可能是残留的旧页面，让房主重开一次房','No response — the host may have a stale old page open; ask them to host again')); },12000);
     conn.on('open',()=>{
       clearTimeout(hint);
-      netStatus('已连上，等房主开局…');
+      netStatus(L('已连上，等房主开局…','Connected — waiting for the host to start…'));
       try{conn.send({t:'join',name:name,v:VERSION,ava:myAvaKey});}catch(_){}
     });
     conn.on('data',onMsg);
@@ -1840,17 +2077,17 @@ async function clientMsg(m){
   if(m.t!=='start'&&m.t!=='lobby'&&m.t!=='badver'&&m.t!=='full'&&(typeof mySeat!=='number'||!hands||!hands.length||!logs)) return;   // 白纸页面先等 start
   if(m.t==='lobby'){ NET.joined=true;
     if(m.tk){ RJTK=m.tk; try{localStorage.setItem('sxh_tk',m.tk);}catch(e){} }
-    netStatus('已入座（'+m.names.join('、')+'）等房主开局…'); }
-  else if(m.t==='badver'){ netFail('版本不一致：房主 v'+m.v+'，你 v'+VERSION+'，都刷新到最新再来'); }
+    netStatus(L('已入座（'+m.names.join('、')+'）等房主开局…','Seated ('+m.names.map(dn).join(', ')+') — waiting for the host to start…')); }
+  else if(m.t==='badver'){ netFail(L('版本不一致：房主 v'+m.v+'，你 v'+VERSION+'，都刷新到最新再来','Version mismatch: host v'+m.v+', you v'+VERSION+' — both refresh to the latest and try again')); }
   else if(m.t==='full'){
     const tk=RJTK||(function(){try{return localStorage.getItem('sxh_tk');}catch(e){return null;}})();
     if(tk&&!NET.triedTk&&NET.conn){ NET.triedTk=1; try{NET.conn.send({t:'rejoin',tk:tk,v:VERSION});}catch(e){}
-      netStatus('牌局开着——正在按老座位接回去…'); return; }
-    netFail('房间满了或已经开打');
+      netStatus(L('牌局开着——正在按老座位接回去…','Game in progress — reclaiming your old seat…')); return; }
+    netFail(L('房间满了或已经开打','The table is full or the game has started'));
   }
-  else if(m.t==='talk'){ speak2(m.seat,m.text); }
+  else if(m.t==='talk'){ speak2(m.seat,relocalTalk(m)||m.text); }
   else if(m.t==='emo'){ showEmo(m.seat,m.key,m.emo); }
-  else if(m.t==='talkless'){ say('⚠ '+m.name+' 掉线了，AI 代打'); render(); }
+  else if(m.t==='talkless'){ say(L('⚠ '+m.name+' 掉线了，AI 代打','⚠ '+dn(m.name)+' dropped — AI is filling in')); render(); }
   else if(m.t==='nak'){ say('⚠ '+m.msg); render(); clientTurn(); }
   else if(m.t==='start'){ await clientStart(m); }
   else if(m.t==='ev'&&NET.started){ clientApply(m.env,m.evs); await presentEvents(m.evs); clientAfter(); }
@@ -1859,12 +2096,12 @@ let RJTK=null;                                 // 本座的重连令牌
 function clientRejoin(round){
   if(over) return;
   const tk=RJTK||(function(){try{return localStorage.getItem('sxh_tk');}catch(e){return null;}})();
-  if(!tk) return netFail('和房主断线了');
-  if(round>=15) return netFail('重连了半天没接上——房主那边可能也断了');
-  say('⚠ 掉线了，正在重连…（第 '+(round+1)+' 次）'); render();
+  if(!tk) return netFail(L('和房主断线了','Lost connection to the host'));
+  if(round>=15) return netFail(L('重连了半天没接上——房主那边可能也断了','Couldn’t reconnect — the host may have dropped too'));
+  say(L('⚠ 掉线了，正在重连…（第 '+(round+1)+' 次）','⚠ Disconnected — reconnecting… (try '+(round+1)+')')); render();
   const peer=new Peer(peerOpts());
   NET={host:false,peer:peer,q:Promise.resolve(),pendCards:null,started:true,joined:true,rejoining:true};
-  const onMsg=m=>{ NET.q=NET.q.then(()=>clientMsg(m)).catch(e=>{console.error(e); say('⚠ 出错：'+e.message); render(); clientAfter();}); };
+  const onMsg=m=>{ NET.q=NET.q.then(()=>clientMsg(m)).catch(e=>{console.error(e); say(L('⚠ 出错：','⚠ Error: ')+e.message); render(); clientAfter();}); };
   let done=false;
   const again=()=>{ if(done||!NET||NET.peer!==peer) return; done=true;
     try{peer.destroy();}catch(e){} setTimeout(()=>{ if(!over) clientRejoin(round+1); },3000); };
@@ -1912,7 +2149,7 @@ async function clientStart(m){
   Sfx.deal();
   await dealAnim();
   fresh=new Set(hands[mySeat]); justGot=true; render(); fresh=new Set();
-  say('发牌完毕');
+  say(L('发牌完毕','Cards dealt'));
   clientAfter();
 }
 function clientEnv(env){
@@ -1940,12 +2177,12 @@ function clientAfter(){
   if(over) return;
   render();
   if(turn===mySeat) clientTurn();
-  else $('hint').innerHTML='<span class="thinking">'+NAMES[turn]+' 在想…</span>';
+  else $('hint').innerHTML='<span class="thinking">'+L(esc(NAMES[turn])+' 在想…',esc(dn(NAMES[turn]))+' is thinking…')+'</span>';
 }
 async function clientTurn(){
   const act=await humanTurn();
   if(act.t==='play') NET.pendCards=act.cards.slice();
-  try{ NET.conn.send({t:'act',act:act}); }catch(e){ netFail('发不出去，可能断线了'); }
+  try{ NET.conn.send({t:'act',act:act}); }catch(e){ netFail(L('发不出去，可能断线了','Couldn’t send — you may be disconnected')); }
   $('hint').innerHTML='';
 }
 
@@ -1954,10 +2191,11 @@ function finish(p){
   MEM.lastWinner=NAMES[p]; saveMem();
   if(p===mySeat){ Sfx.win();
     const ais=[0,1,2,3].filter(isAI);
-    if(ais.length) aiBanter(ais[Math.random()*ais.length|0], '这一局真人玩家先出完牌，赢了。你们都输给他了，酸他一句或者服个软');
-  } else { Sfx.lose(); if(isAI(p)){ chat(p,'over',.8); render(); aiBanter(p, '这一局你先出完牌，你赢了，得意一句'); } }
-  $('winner').textContent = p===mySeat?'你赢了':NAMES[p]+' 赢了';
-  $('overText').textContent = p===mySeat?'最后一手没人敢抓。':NAMES[p]+' 的牌先走完，没人抓住。';
+    if(ais.length) aiBanter(ais[Math.random()*ais.length|0], L('这一局真人玩家先出完牌，赢了。你们都输给他了，酸他一句或者服个软',
+      'The human player went out first and won this game. You all lost to them — needle them or grudgingly concede.'));
+  } else { Sfx.lose(); if(isAI(p)){ chat(p,'over',.8); render(); aiBanter(p, L('这一局你先出完牌，你赢了，得意一句','You went out first and won this game — gloat a little.')); } }
+  $('winner').textContent = p===mySeat?L('你赢了','You win!'):L(NAMES[p]+' 赢了',dn(NAMES[p])+' wins');
+  $('overText').textContent = p===mySeat?L('最后一手没人敢抓。','Nobody dared call your last play.'):L(NAMES[p]+' 的牌先走完，没人抓住。',dn(NAMES[p])+' went out first and nobody caught it.');
   $('overSheet').classList.add('on');
 }
 
@@ -1968,7 +2206,7 @@ async function presentEvents(evs){
     else if(ev.e==='passed'){
       if(tilt[ev.seat]) tilt[ev.seat]--;
       Sfx.pass();
-      say(nm(ev.seat)+' 过');
+      say(L(nm(ev.seat)+' 过',nm(ev.seat)+' passed'));
       stage(claimHTML(ev.claimSeat,ev.claimN,ev.rank)+pileHTML());
       render(); await sleep(720*PACEF());
     }
@@ -1984,17 +2222,17 @@ async function loop(){
     if(turn===mySeat&&SEATK[turn]==='human') action=await humanTurn();
     else if(SEATK[turn]==='remote'){
       stage((currentRank===null
-        ? '<div class="who">轮到</div><div class="plaque">'+NAMES[turn]+'</div>'
+        ? '<div class="who">'+L('轮到','Up next')+'</div><div class="plaque">'+esc(dn(NAMES[turn]))+'</div>'
         : claimHTML(lastPlay.player,lastPlay.cards.length,currentRank)+pileHTML()));
-      $('hint').innerHTML='<span class="thinking">等 '+NAMES[turn]+' 出牌…</span>';
+      $('hint').innerHTML='<span class="thinking">'+L('等 '+esc(NAMES[turn])+' 出牌…','Waiting for '+esc(dn(NAMES[turn]))+'…')+'</span>';
       action=await waitRemote(turn);
       $('hint').textContent='';
     }
     else{
       stage((currentRank===null
-        ? '<div class="who">轮到</div><div class="plaque">'+NAMES[turn]+'</div>'
+        ? '<div class="who">'+L('轮到','Up next')+'</div><div class="plaque">'+esc(dn(NAMES[turn]))+'</div>'
         : claimHTML(lastPlay.player,lastPlay.cards.length,currentRank)+pileHTML()));
-      $('hint').innerHTML = '<span class="thinking">'+NAMES[turn]+' 在想…</span>';
+      $('hint').innerHTML = '<span class="thinking">'+L(esc(NAMES[turn])+' 在想…',esc(dn(NAMES[turn]))+' is thinking…')+'</span>';
       action=await takeTurn(turn);
       $('hint').textContent='';
     }
@@ -2013,7 +2251,18 @@ async function loop(){
 
 /* ═══ 设置与规则文案 ═══ */
 function paintRules(){
-  const r=[
+  const r= EN() ? [
+    SET.deck===2 ? '<b>One deck without jokers, plus 8 random cards shuffled in from a second deck</b> — 60 cards, 15 each, all dealt. Every rank has at least 4 and up to 12 copies, and nobody knows which ranks got the extras.'
+    : SET.wild? 'One deck with both jokers, 13 cards each; the last 2 are set aside face down.'
+              : 'One 52-card deck, 13 cards each.',
+    'Whoever starts a round names the rank; after that everyone must claim <b>that same rank</b>.',
+    'On your turn, play 1–'+SET.max+' cards face down, <b>or pass</b> — even if you hold real ones. Whoever starts a round must play.',
+    'You can’t lie about how many cards, only what they are.'+((SET.deck!==2&&SET.wild)?' <b>Jokers are wild</b>, so they never count as a lie.':''),
+    'If the next three players all pass, '+(SET.burn?'the pile is discarded':'the last player to play takes the pile')+' and the last player to play starts a new round.',
+    '<b>Only the next player can call</b> — on your turn you can play, pass, or shout “Liar!” at the player before you. If you pass, the chance to call moves on.',
+    'Right call: the liar takes the whole pile and <b>the caller plays next</b>. Wrong call: the caller takes the pile and <b>the accused plays next</b>.',
+    'First to empty their hand — with that last play going unchallenged — wins.'
+  ] : [
     SET.deck===2 ? '<b>一副牌去掉大小王，再从另一副里随机抽 8 张混进去</b>，共 60 张，每人 15 张全发完。每个点数至少 4 张、最多可能 12 张——多出来的是哪几张，谁也不知道。'
     : SET.wild? '一副牌带大小王，每人 13 张，剩 2 张扣在一边不用。'
               : '一副牌 52 张，每人 13 张。',
@@ -2037,6 +2286,7 @@ document.querySelectorAll('.seg').forEach(seg=>{
   seg.addEventListener('click',e=>{
     const b=e.target.closest('button'); if(!b) return;
     SET[seg.dataset.k]=+b.dataset.v; saveSet(); Sfx.tick(); paintSettings(); paintRules();
+    if(seg.dataset.k==='lang') onLang();
   });
 });
 $('rulesBtn').onclick=()=>{paintRules();$('rulesSheet').classList.add('on');};
@@ -2056,9 +2306,10 @@ document.addEventListener('click',e=>{      // 点别处收起
 $('rulesClose').onclick=()=>$('rulesSheet').classList.remove('on');
 function paintMem(){
   $('memLine').textContent = MEM.games
-    ? '一共 '+MEM.games+' 局 · '+winsLine()+
-      ' · 你吹牛被逮 '+MEM.humanCaught+' 次，抓对 '+MEM.humanGoodCall+'、抓错 '+MEM.humanBadCall
-    : '还没打过，白纸一张。';
+    ? L('一共 '+MEM.games+' 局 · '+winsLine()+
+      ' · 你吹牛被逮 '+MEM.humanCaught+' 次，抓对 '+MEM.humanGoodCall+'、抓错 '+MEM.humanBadCall,
+      MEM.games+' games · '+winsLine()+' · you got caught bluffing '+MEM.humanCaught+'×, called right '+MEM.humanGoodCall+'×, wrong '+MEM.humanBadCall+'×')
+    : L('还没打过，白纸一张。','No games yet — clean slate.');
 }
 $('memReset').onclick=()=>{
   MEM.games=0;MEM.winsBy={};MEM.lastWinner=null;
@@ -2068,7 +2319,7 @@ $('memReset').onclick=()=>{
 function paintCastPick(){
   const el=$('castPick'); if(!el) return;
   el.innerHTML=ROSTER.map(r=>'<div class="cp'+(PREF_CAST.includes(r.key)?' on':'')+'" data-k="'+r.key+'">'+
-    '<div class="face">'+r.ava.pre+r.ava.f.idle+r.ava.post+'</div><div class="cn">'+r.name+'</div></div>').join('');
+    '<div class="face">'+r.ava.pre+r.ava.f.idle+r.ava.post+'</div><div class="cn">'+dn(r.name)+'</div></div>').join('');
 }
 $('castPick').addEventListener('click',e=>{
   const cp=e.target.closest('.cp'); if(!cp) return;
@@ -2076,22 +2327,47 @@ $('castPick').addEventListener('click',e=>{
   PREF_CAST = PREF_CAST.includes(k)? PREF_CAST.filter(x=>x!==k) : PREF_CAST.concat([k]);
   savePrefCast(); Sfx.tick(); paintCastPick();
 });
-$('setBtn').onclick=()=>{paintSettings();paintMem();paintCastPick();$('keyInput').value=KEY;$('setSheet').classList.add('on');};
+$('setBtn').onclick=()=>{paintSettings();paintMem();paintCastPick();$('keyInput').value=KEY;paintKeyTip();$('setSheet').classList.add('on');};
+function paintKeyTip(){
+  $('keyTip').textContent = KEY? L('已填。只存在这台手机上，不写进文件。','Saved. Stored on this phone only, never in the file.')
+                               : L('不填就全用写好的词。只存在这台手机上，不写进文件。','Leave blank to use scripted lines only. Stored on this phone only, never in the file.');
+}
 $('keyInput').addEventListener('input',e=>{
   KEY=e.target.value.trim(); aiWarned=false;
   try{ localStorage.setItem('ds_key',KEY); }catch(err){}
-  $('keyTip').textContent = KEY? '已填。只存在这台手机上，不写进文件。'
-                               : '不填就全用写好的词。只存在这台手机上，不写进文件。';
+  paintKeyTip();
 });
 $('setClose').onclick=()=>{$('setSheet').classList.remove('on');newGame();};
 $('setBack').onclick=()=>{$('setSheet').classList.remove('on');render();updateControls();};
 $('againBtn').onclick=()=>{
-  if(NET&&!NET.host){ $('overText').textContent='等房主再开一局…'; return; }
+  if(NET&&!NET.host){ $('overText').textContent=L('等房主再开一局…','Waiting for the host to start another game…'); return; }
   newGame();
 };
 
 $('ver').textContent='v'+VERSION;
-$('verFull').textContent='苗伯说瞎话 v'+VERSION;
+$('verFull').textContent=L('苗伯说瞎话','Uncle Miao’s Bluff')+' v'+VERSION;
+// ═══ 语言切换：静态文字带 data-en，动态文字走 L() ═══
+function applyLang(){
+  document.documentElement.lang=EN()?'en':'zh-CN';
+  document.title=L('苗伯说瞎话','Uncle Miao’s Bluff');
+  document.querySelectorAll('[data-en]').forEach(el=>{
+    if(el.dataset.zh===undefined) el.dataset.zh=el.innerHTML;
+    el.innerHTML=EN()?el.dataset.en:el.dataset.zh;
+  });
+  document.querySelectorAll('[data-enph]').forEach(el=>{
+    if(el.dataset.zhph===undefined) el.dataset.zhph=el.placeholder;
+    el.placeholder=EN()?el.dataset.enph:el.dataset.zhph;
+  });
+  $('verFull').textContent=L('苗伯说瞎话','Uncle Miao’s Bluff')+' v'+VERSION;
+  const lb=$('langBtn'); if(lb) lb.textContent=EN()?'中文':'English';
+  if(!NET||!NET.host) { const ll=$('lobbyList'); if(ll&&!NET) ll.textContent=L('就你一个','Just you'); }
+}
+function onLang(){
+  applyLang(); paintRules(); paintMem(); paintCastPick(); paintKeyTip(); paintLobby();
+  if(hands&&hands.length){ playControls(); render(); }
+  if($('ebar').classList.contains('on')) paintEbar();
+}
+applyLang();
 
 async function dealAnim(){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -2128,18 +2404,19 @@ async function newGame(){
   await dealAnim();
   fresh=new Set(hands[mySeat]); justGot=true; render(); fresh=new Set();   // 亮手牌时从下面滑进来，滑完不留圈
   dealing=false;
-  say('发牌完毕，'+nm(turn)+'先出');
+  say(L('发牌完毕，'+nm(turn)+'先出','Cards dealt — '+(turn===mySeat?'you go first':nm(turn)+' goes first')));
   loop();
 }
 
 $('sver').textContent='v'+VERSION;
 $('startRules').onclick=()=>{paintRules();$('rulesSheet').classList.add('on');};
+$('langBtn').onclick=()=>{ SET.lang=EN()?0:1; saveSet(); Sfx.tick(); onLang(); };
 function savedName(){ try{return localStorage.getItem('sxh_name')||'';}catch(e){return '';} }
 let myAvaKey=(()=>{try{return localStorage.getItem('sxh_ava')||'';}catch(e){return '';}})();
 let HUMAN_AVAKEYS={};    // 各座位真人挑的头像人物，AI 选角时避开
 function paintAvaPick(id){
   const el=$(id); if(!el) return;
-  el.innerHTML='<div class="ap txt'+(myAvaKey===''?' on':'')+'" data-k="">字</div>'+
+  el.innerHTML='<div class="ap txt'+(myAvaKey===''?' on':'')+'" data-k="">'+L('字','Aa')+'</div>'+
     Object.keys(AVATARS).map(k=>'<div class="ap'+(myAvaKey===k?' on':'')+'" data-k="'+k+'">'+
       AVATARS[k].pre+AVATARS[k].f.idle+AVATARS[k].post+'</div>').join('');
 }
@@ -2153,13 +2430,15 @@ function keepName(v){ try{localStorage.setItem('sxh_name',v);}catch(e){} }
 function paintLobby(){
   if(!NET||!NET.host) return;
   const others=NET.conns.map(c=>c.pname);
-  $('lobbyList').textContent = others.length? '你、'+others.join('、')+
-    (others.length<3?'（还有 '+(3-others.length)+' 个空位，AI 补）':'（满员）') : '就你一个（其余 AI 补）';
+  $('lobbyList').textContent = EN()
+    ? (others.length? 'You, '+others.map(dn).join(', ')+(others.length<3?' ('+(3-others.length)+' empty — AI fills in)':' (full)') : 'Just you (AI fills the rest)')
+    : (others.length? '你、'+others.join('、')+
+    (others.length<3?'（还有 '+(3-others.length)+' 个空位，AI 补）':'（满员）') : '就你一个（其余 AI 补）');
 }
 $('hostBtn').onclick=async ()=>{
   Sfx.wake();
   $('netHost').style.display='block'; $('netJoin').style.display='none';
-  $('hostName').value=savedName()||'房主';
+  $('hostName').value=savedName()||L('房主','Host');
   paintAvaPick('hostAva');
   $('netSheet').classList.add('on');
   try{ await hostRoom(); }catch(e){ $('netStatusH').textContent=e.message; }
@@ -2173,13 +2452,13 @@ $('joinBtn').onclick=()=>{
 };
 $('hostGo').onclick=()=>{
   if(!NET||!NET.host) return;
-  NET.myName=($('hostName').value.trim()||'房主').slice(0,8);
+  NET.myName=($('hostName').value.trim()||L('房主','Host')).slice(0,8);
   keepName(NET.myName);
   startNetGame();
 };
 $('hostCancel').onclick=()=>{ if(NET){ try{NET.peer.destroy();}catch(e){} } NET=null; $('netSheet').classList.remove('on'); };
 $('joinGo').onclick=async ()=>{
-  const nm=($('joinName').value.trim()||'玩家').slice(0,8);
+  const nm=($('joinName').value.trim()||L('玩家','Player')).slice(0,8);
   keepName(nm);
   try{ await joinRoom(nm); }catch(e){ $('netStatus').textContent=e.message; }
 };
